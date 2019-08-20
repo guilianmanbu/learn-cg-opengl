@@ -41,17 +41,20 @@ Util::~Util()
 }
 
 void Polygon3DBegin(GLenum type){
+	glEnd();
 	glBegin(type);
+	//Message("000000");
 }
 void Polygon3DVertex(const GLvoid* data){
 	const GLdouble * ptr=(const GLdouble*)data;
 	glVertex3dv(ptr);
+	//Message("111111");
 }
 void Polygon3DEnd(){
 	glEnd();
+	//Message("2222");
 }
 BOOL Util::PolygonTesslator(CArray<GLPoint,GLPoint> &m_Point_Array){
-	Message("多边形区域填充设置","提示");
 	int pt_num = m_Point_Array.GetSize();
 	if(pt_num<3) return FALSE;
 
@@ -71,7 +74,7 @@ BOOL Util::PolygonTesslator(CArray<GLPoint,GLPoint> &m_Point_Array){
 	gluTessBeginPolygon(tess,NULL);		//开始网格化
 		gluTessBeginContour(tess);		//外环，内环一样
 		for(int j=0;j<pt_num;j++){
-			gluTessVertex(tess,quad[i],quad[i]);	//
+			gluTessVertex(tess,quad[j],quad[j]);	//
 		}
 		gluTessEndContour(tess);
 	gluTessEndPolygon(tess);

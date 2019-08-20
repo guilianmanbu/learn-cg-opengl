@@ -144,10 +144,24 @@ BEGIN
     POPUP "插入"
     BEGIN
         MENUITEM "画点",                        ID_POINT
+        MENUITEM "直线",                        ID_LINE
+        MENUITEM "折线",                        ID_LINE_STRIP
+        MENUITEM "线圈",                        ID_LINE_LOOP
+        MENUITEM "三角",                        ID_TRIANGLE
+        MENUITEM "三角-链",                     ID_TRIANGLE_STRIP
+        MENUITEM "三角-扇",                     ID_TRIANGLE_FAN
+        MENUITEM "四边形",                      ID_QUAD
+        MENUITEM "四边形-链",                   ID_QUAD_STRIP
+        MENUITEM "多边形",                      ID_POLYGON
     END
     POPUP "渲染"
     BEGIN
         MENUITEM "填充",                        ID_POLYGON_FILL
+        MENUITEM "颜色",                        ID_COLOR_SET
+        MENUITEM "点大小",                      ID_POINT_SIZE
+        MENUITEM "线宽",                        ID_LINE_WIDTH
+        MENUITEM "线型",                        ID_LINETYPE
+        MENUITEM "坐标长度",                    ID_DRAW_SIZE
     END
     POPUP "帮助(&H)"
     BEGIN
@@ -204,6 +218,67 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,195,24,50,14
     CONTROL         "区域填充",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,32,26,46,10
+END
+
+IDD_COORDSETDLG_DIALOG DIALOG DISCARDABLE  0, 0, 292, 103
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "绘图坐标系短轴长度设置"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,235,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,235,24,50,14
+    LTEXT           "短轴长度",IDC_STATIC,25,21,70,15
+    EDITTEXT        IDC_EDIT1,23,39,87,21,ES_AUTOHSCROLL
+END
+
+IDD_POINTSIZEDLG_DIALOG DIALOG DISCARDABLE  0, 0, 299, 149
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "设置点的大小"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,242,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,242,24,50,14
+    LTEXT           "设置点大小",IDC_STATIC,23,24,64,18
+    EDITTEXT        IDC_EDIT1,71,21,85,25,ES_AUTOHSCROLL
+    LTEXT           "点大小可设置范围",IDC_STATIC,30,72,60,8
+    LTEXT           "点增量步长",IDC_STATIC,33,101,54,11
+    EDITTEXT        IDC_EDIT2,102,70,33,13,ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        IDC_EDIT3,155,70,33,14,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "————",IDC_STATIC,138,71,13,7
+    EDITTEXT        IDC_EDIT4,82,99,62,15,ES_AUTOHSCROLL | ES_READONLY
+END
+
+IDD_LINEWIDTHDLG_DIALOG DIALOG DISCARDABLE  0, 0, 320, 201
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "设置线宽"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,263,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,263,24,50,14
+    LTEXT           "设置线宽",IDC_STATIC,26,32,30,8
+    EDITTEXT        IDC_EDIT1,91,30,92,17,ES_AUTOHSCROLL
+    LTEXT           "线宽范围",IDC_STATIC,27,67,30,8
+    EDITTEXT        IDC_EDIT2,91,65,33,17,ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        IDC_EDIT3,155,65,38,16,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "——",IDC_STATIC,130,65,26,16
+    LTEXT           "线宽增量步长",IDC_STATIC,27,104,45,8
+    EDITTEXT        IDC_EDIT4,94,102,90,16,ES_AUTOHSCROLL | ES_READONLY
+END
+
+IDD_PATTERNDLG_DIALOG DIALOG DISCARDABLE  0, 0, 320, 201
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "设置线型"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,263,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,263,24,50,14
+    LTEXT           "设置线型",IDC_STATIC,24,29,85,24
+    CONTROL         "实线",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON | WS_GROUP,
+                    34,65,75,17
+    CONTROL         "虚线",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,34,94,75,
+                    19
+    CONTROL         "中心线",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,34,127,
+                    48,14
 END
 
 
@@ -275,6 +350,38 @@ BEGIN
         RIGHTMARGIN, 245
         TOPMARGIN, 7
         BOTTOMMARGIN, 106
+    END
+
+    IDD_COORDSETDLG_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 285
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 96
+    END
+
+    IDD_POINTSIZEDLG_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 292
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 142
+    END
+
+    IDD_LINEWIDTHDLG_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 313
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 194
+    END
+
+    IDD_PATTERNDLG_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 313
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 194
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -403,11 +510,21 @@ BEGIN
     ID_QUAD                 "四边形"
     ID_QUAD_STRIP           "四边形-链"
     ID_POLYGON              "多边形"
+    ID_COLOR_SET            "设置绘图颜色"
+    ID_POINT_SIZE           "设置点的大小"
 END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
     IDD_POLYGONFILLDLG_DIALOG "多边形区域填充设置"
+    IDD_COORDSETDLG_DIALOG  "绘图坐标系短轴长度设置"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_LINE_WIDTH           "设置线宽"
+    ID_LINETYPE             "设置线型"
+    ID_DRAW_SIZE            "设置绘图区域的坐标长度"
 END
 
 #endif    // Chinese (中国) resources

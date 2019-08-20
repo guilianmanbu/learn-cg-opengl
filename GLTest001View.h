@@ -17,9 +17,9 @@
 #include<math.h>
 #include<afxtempl.h>
 #include "Util.h"
-#include "PolygonFillDlg.h"
 
 // graphic macro
+#define GLNULL			0
 #define GLPOINTS		1
 #define GLLINES			2
 #define GLLINESTRIP		3
@@ -56,7 +56,7 @@ public:
 	GLfloat m_iAlpha;		//颜色透明度
 	GLfloat m_PtCurSize;	//点的大小
 	GLfloat m_LineWidth;	//线宽
-	GLshort m_LinePatten;	//线型
+	GLshort m_LinePattern;	//线型
 	BOOL m_bPolygonFill;	//是否填充
 	int m_flag;				//绘图命令标识
 	int m_Rflag;			//是否拾取操作，0：不，1：是
@@ -73,6 +73,9 @@ public:
 // Draw graphic
 public:
 	void Draw_line();
+	void Draw_LineStrip();
+	void Draw_Point();
+	void SetVertexesToGL(BOOL tessellate);
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -103,6 +106,21 @@ protected:
 	afx_msg void OnPolygonFill();
 	afx_msg void OnPoint();
 	afx_msg void OnLine();
+	afx_msg void OnLineStrip();
+	afx_msg void OnLineLoop();
+	afx_msg void OnTriangle();
+	afx_msg void OnTriangleStrip();
+	afx_msg void OnTriangleFan();
+	afx_msg void OnQuad();
+	afx_msg void OnQuadStrip();
+	afx_msg void OnPolygon();
+	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnColorSet();
+	afx_msg void OnDrawSize();
+	afx_msg void OnPointSize();
+	afx_msg void OnLineWidth();
+	afx_msg void OnLinetype();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

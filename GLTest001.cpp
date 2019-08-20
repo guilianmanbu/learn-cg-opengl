@@ -7,6 +7,7 @@
 #include "MainFrm.h"
 #include "GLTest001Doc.h"
 #include "GLTest001View.h"
+#include "CoordSetDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -47,6 +48,20 @@ CGLTest001App theApp;
 
 BOOL CGLTest001App::InitInstance()
 {
+
+	/*{	// BLOCK: doc template registration
+		// Register the document template.  Document templates serve
+		// as the connection between documents, frame windows and views.
+		// Attach this form to another document or frame window by changing
+		// the document or frame class in the constructor below.
+		CSingleDocTemplate* pNewDocTemplate = new CSingleDocTemplate(
+			IDD_COORDSETDLG_DIALOG,
+			RUNTIME_CLASS(CGLTest001Doc),		// document class
+			RUNTIME_CLASS(CMainFrame),		// frame class
+			RUNTIME_CLASS(CCoordSetDlg));		// view class
+		AddDocTemplate(pNewDocTemplate);
+	}*/
+
 	AfxEnableControlContainer();
 
 	// Standard initialization
