@@ -2,33 +2,35 @@
 
 [General Info]
 Version=1
-LastClass=CGLTest001View
+LastClass=CEnvironmentSetDlg
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "GLTest001.h"
 LastPage=0
 
-ClassCount=11
+ClassCount=12
 Class1=CGLTest001App
 Class2=CGLTest001Doc
 Class3=CGLTest001View
 Class4=CMainFrame
 
-ResourceCount=7
+ResourceCount=8
 Resource1=IDD_COORDSETDLG_DIALOG
-Resource2=IDD_POINTSIZEDLG_DIALOG
+Resource2=IDD_LINEWIDTHDLG_DIALOG
 Class5=CAboutDlg
 Class6=PolygonFillDlg
 Class7=CoordSetDlg
 Resource3=IDD_POLYGONFILLDLG_DIALOG
 Class8=CCoordSetDlg
-Resource4=IDD_LINEWIDTHDLG_DIALOG
+Resource4=IDD_PATTERNDLG_DIALOG
 Class9=CPointSizeDlg
 Resource5=IDD_ABOUTBOX
 Class10=CLineWidthDlg
 Resource6=IDR_MAINFRAME
 Class11=CPatternDlg
-Resource7=IDD_PATTERNDLG_DIALOG
+Resource7=IDD_POINTSIZEDLG_DIALOG
+Class12=CEnvironmentSetDlg
+Resource8=IDD_ENVIRONMENTSETDLG_DIALOG
 
 [CLS:CGLTest001App]
 Type=0
@@ -49,7 +51,7 @@ ImplementationFile=GLTest001View.cpp
 Filter=C
 BaseClass=CView
 VirtualFilter=VWC
-LastObject=ID_POLYGON_FILL
+LastObject=CGLTest001View
 
 
 [CLS:CMainFrame]
@@ -59,7 +61,7 @@ ImplementationFile=MainFrm.cpp
 Filter=T
 BaseClass=CFrameWnd
 VirtualFilter=fWC
-LastObject=ID_POLYGON_FILL_TOOL
+LastObject=CMainFrame
 
 
 
@@ -119,8 +121,9 @@ Command34=ID_POINT_SIZE
 Command35=ID_LINE_WIDTH
 Command36=ID_LINETYPE
 Command37=ID_DRAW_SIZE
-Command38=ID_APP_ABOUT
-CommandCount=38
+Command38=ID_ENVIRONMENTSET
+Command39=ID_APP_ABOUT
+CommandCount=39
 
 [ACL:IDR_MAINFRAME]
 Type=1
@@ -163,7 +166,8 @@ Command17=ID_QUAD_STRIP
 Command18=ID_POLYGON
 Command19=ID_POLYGON_FILL_TOOL
 Command20=ID_ANIMATION
-CommandCount=20
+Command21=ID_ENVIRONMENTSET
+CommandCount=21
 
 [DLG:IDD_POLYGONFILLDLG_DIALOG]
 Type=1
@@ -275,4 +279,28 @@ BaseClass=CDialog
 Filter=D
 LastObject=IDC_RADIO1
 VirtualFilter=dWC
+
+[DLG:IDD_ENVIRONMENTSETDLG_DIALOG]
+Type=1
+Class=CEnvironmentSetDlg
+ControlCount=10
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+Control3=IDC_CHECK1,button,1342373891
+Control4=IDC_CHECK2,button,1342373891
+Control5=IDC_CHECK3,button,1342373891
+Control6=IDC_CHECK4,button,1342373891
+Control7=IDC_CHECK7,button,1342373891
+Control8=IDC_CHECK8,button,1342373891
+Control9=IDC_BUTTON1,button,1342242816
+Control10=IDC_CHECK9,button,1342242819
+
+[CLS:CEnvironmentSetDlg]
+Type=0
+HeaderFile=EnvironmentSetDlg.h
+ImplementationFile=EnvironmentSetDlg.cpp
+BaseClass=CDialog
+Filter=D
+VirtualFilter=dWC
+LastObject=IDC_BUTTON1
 

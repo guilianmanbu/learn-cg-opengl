@@ -49,7 +49,7 @@ protected: // create from serialization only
 
 // Attributes
 public:
-	CGLTest001Doc* GetDocument();
+	CGLTest001Doc * GetDocument();
 
 	HGLRC m_hRC;		// 渲染环境句柄
 	CDC * m_pDC;		// 设备指针
@@ -79,6 +79,18 @@ public:
 	//三维
 	GLdouble m_3DRadius;
 
+	//真实感渲染
+	BOOL m_DepthFlag;			//深度检测
+	BOOL m_LightFlag;			//启用光照状态
+	BOOL m_Light0Flag;			//0号灯状态
+	BOOL m_Light1Flag;			//1号灯状态
+	BOOL m_LightModelFlag;		//是否启用光照模型
+	BOOL m_MaterialColorFlag;	//是否跟踪当前绘图颜色
+	BOOL m_MatEmissionFlag;		//设置材质是否自发光
+	GLfloat m_iR_BG;			//设置背景颜色
+	GLfloat m_iG_BG;
+	GLfloat m_iB_BG;
+
 // Operations
 public:
 	BOOL InitializeOpenGL();		// OpenGL初始化
@@ -86,13 +98,14 @@ public:
 
 	void RenderScene();				//渲染函数
 	void InitOperation();			//绘图操作初始化设置
+	void RealEnvironmentSet();		//真实感设置函数
 
 // Draw graphic
 public:
 	void Draw_line();
 	void Draw_LineStrip();
 	void Draw_Point();
-	void SetVertexesToGL(BOOL tessellate);
+	void SetVertexesToGL();
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -151,6 +164,7 @@ protected:
 	afx_msg void OnTorus();
 	afx_msg void OnTeapot();
 	afx_msg void OnPolygonFillTool();
+	afx_msg void OnEnvironmentset();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

@@ -108,6 +108,7 @@ BEGIN
     SEPARATOR
     BUTTON      ID_POLYGON_FILL_TOOL
     BUTTON      ID_ANIMATION
+    BUTTON      ID_ENVIRONMENTSET
 END
 
 
@@ -173,6 +174,8 @@ BEGIN
         MENUITEM "线宽",                        ID_LINE_WIDTH
         MENUITEM "线型",                        ID_LINETYPE
         MENUITEM "坐标长度",                    ID_DRAW_SIZE
+        MENUITEM SEPARATOR
+        MENUITEM "场景设置",                    ID_ENVIRONMENTSET
     END
     POPUP "帮助(&H)"
     BEGIN
@@ -292,6 +295,30 @@ BEGIN
                     48,14
 END
 
+IDD_ENVIRONMENTSETDLG_DIALOG DIALOG DISCARDABLE  0, 0, 320, 236
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "场景设置"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,238,152,75,43
+    PUSHBUTTON      "Cancel",IDCANCEL,263,213,50,14
+    CONTROL         "深度检测",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | 
+                    WS_GROUP | WS_TABSTOP,24,21,71,18
+    CONTROL         "开启光照",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | 
+                    WS_GROUP | WS_TABSTOP,24,51,45,10
+    CONTROL         "打开0号灯",IDC_CHECK3,"Button",BS_AUTOCHECKBOX | 
+                    WS_GROUP | WS_TABSTOP,55,71,49,10
+    CONTROL         "打开1号灯",IDC_CHECK4,"Button",BS_AUTOCHECKBOX | 
+                    WS_GROUP | WS_TABSTOP,114,71,49,10
+    CONTROL         "启用光照模型",IDC_CHECK7,"Button",BS_AUTOCHECKBOX | 
+                    WS_GROUP | WS_TABSTOP,25,95,62,14
+    CONTROL         "使用材料着色（无光照）",IDC_CHECK8,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,25,125,97,10
+    PUSHBUTTON      "设置背景颜色",IDC_BUTTON1,25,191,84,22
+    CONTROL         "开启自发光",IDC_CHECK9,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,26,151,53,10
+END
+
 
 #ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
@@ -393,6 +420,14 @@ BEGIN
         RIGHTMARGIN, 313
         TOPMARGIN, 7
         BOTTOMMARGIN, 194
+    END
+
+    IDD_ENVIRONMENTSETDLG_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 313
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 227
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -546,6 +581,7 @@ BEGIN
     ID_SPHERE               "球体"
     ID_TORUS                "圆环体"
     ID_TEAPOT               "茶壶"
+    ID_ENVIRONMENTSET       "场景设置"
 END
 
 #endif    // Chinese (中国) resources

@@ -12,6 +12,7 @@
 #include "PointSizeDlg.h"
 #include "LineWidthDlg.h"
 #include "PatternDlg.h"
+#include "EnvironmentSetDlg.h"
 
 #pragma comment(lib,"glaux")
 #pragma comment(lib,"glut32")
@@ -65,6 +66,7 @@ BEGIN_MESSAGE_MAP(CGLTest001View, CView)
 	ON_COMMAND(ID_TORUS, OnTorus)
 	ON_COMMAND(ID_TEAPOT, OnTeapot)
 	ON_COMMAND(ID_POLYGON_FILL_TOOL, OnPolygonFillTool)
+	ON_COMMAND(ID_ENVIRONMENTSET, OnEnvironmentset)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -91,6 +93,17 @@ CGLTest001View::CGLTest001View()
 	m_rAngle=0.0;
 	m_Scale=1.0;
 	m_bAnimation=FALSE;
+	//真实感渲染
+	m_DepthFlag=FALSE;			//深度检测
+	m_LightFlag=FALSE;			//启用光照状态
+	m_Light0Flag=FALSE;			//0号灯状态
+	m_Light1Flag=FALSE;			//1号灯状态
+	m_LightModelFlag=FALSE;		//是否启用光照模型
+	m_MaterialColorFlag=FALSE;	//是否跟踪当前绘图颜色
+	m_MatEmissionFlag=FALSE;		//设置材质是否自发光
+	m_iR_BG=1.0;			//设置背景颜色
+	m_iG_BG=1.0;
+	m_iB_BG=1.0;
 }
 
 CGLTest001View::~CGLTest001View()
@@ -336,7 +349,7 @@ void CGLTest001View::RenderScene(){
 			break;
 	}
 	if(setRawVertexes){
-		SetVertexesToGL(FALSE);  // 传送顶点给GL
+		SetVertexesToGL();  // 传送顶点给GL
 	}
 	glEnd();
 
@@ -363,18 +376,87 @@ void CGLTest001View::InitOperation(){
 	Invalidate();
 }
 
-void CGLTest001View::SetVertexesToGL(BOOL tessellate){
-	if(tessellate){
-		//MessageBox("填充");
-		Util::PolygonTesslator(m_Point_Array);
+void CGLTest001View::SetVertexesToGL(){
+	for(int i=0;i<m_Point_Array.GetSize();i++){
+		GLPoint pt(m_Point_Array[i]);
+		glVertex3f(pt.x,pt.y,pt.z);
+	}
+}
+//真实感设置函数
+void CGLTest001View::RealEnvironmentSet(){
+	if(m_DepthFlag==TRUE)
+		glEnable(GL_DEPTH_TEST);
+	else
+		glDisable(GL_DEPTH_TEST);
+	if(m_LightFlag)
+		glEnable(GL_LIGHTING);
+	else
+		glDisable(GL_LIGHTING);
+	//设置灯光
+	GLfloat ambientLight[] = {.1f,.1f,.1f,1.f};
+	GLfloat diffuseLight[] = {0.9f,0.9f,0.9f,1.0f};
+	GLfloat specularLight[] = {1.0f,1.0f,1.0f,1.0f};
+	GLfloat light0Pos[] = {-Win_Size,-Win_Size,-Win_Size,1.0f};
+	GLfloat light1Pos[] = {Win_Size,Win_Size,Win_Size,1.0f};
+	//0号灯
+	glLightfv(GL_LIGHT0,GL_AMBIENT,ambientLight);
+	glLightfv(GL_LIGHT0,GL_DIFFUSE,diffuseLight);
+	glLightfv(GL_LIGHT0,GL_SPECULAR,specularLight);
+	glLightfv(GL_LIGHT0,GL_POSITION,light0Pos);
+	if(m_Light0Flag)
+		glEnable(GL_LIGHT0);
+	else
+		glDisable(GL_LIGHT0);
+	//1号灯
+	glLightfv(GL_LIGHT1,GL_AMBIENT,ambientLight);
+	glLightfv(GL_LIGHT1,GL_DIFFUSE,diffuseLight);
+	glLightfv(GL_LIGHT1,GL_SPECULAR,specularLight);
+	glLightfv(GL_LIGHT1,GL_POSITION,light1Pos);
+	if(m_Light1Flag)
+		glEnable(GL_LIGHT1);
+	else
+		glDisable(GL_LIGHT1);
+	//是否启用光照模型，如果启用，材质不再跟踪当前颜色
+	if(m_LightModelFlag==TRUE){  //启用光照模型
+		glDisable(GL_COLOR_MATERIAL);
+		glLightModelf(GL_LIGHT_MODEL_TWO_SIDE,1.0f);	//双面光照
+		GLfloat lmodel_ambient[]={0.4f,0.4f,0.4f,1.0f};
+		GLfloat local_view[]={0.0f};
+		glLightModelfv(GL_LIGHT_MODEL_AMBIENT,lmodel_ambient);
+		glLightModelfv(GL_LIGHT_MODEL_LOCAL_VIEWER,local_view);
 	}
 	else{
-		//MessageBox("不填充");
-		for(int i=0;i<m_Point_Array.GetSize();i++){
-			GLPoint pt(m_Point_Array[i]);
-			glVertex3f(pt.x,pt.y,pt.z);
+		if(m_MaterialColorFlag==TRUE){		//是否跟踪当前绘图颜色
+			glEnable(GL_COLOR_MATERIAL);
+			glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
 		}
+		else
+			glDisable(GL_COLOR_MATERIAL);
 	}
+	//材质设置
+	GLfloat mat_ambient[]={0.2f,0.2f,0.2f,1.0f};		//材质正面对环境光的反射
+	GLfloat mat_diffuse[]={0.1f,0.5f,0.6f,1.0f};		//材质正面对漫反射光的反射
+	GLfloat mat_specular[]={0.5f,0.5f,0.5f,1.0f};		//材质正面对镜面光的反射
+	GLfloat mat_back_ambient[]={0.1f,0.1f,0.1f,1.0f};	//材质背面对环境光的反射
+	GLfloat mat_back_diffuse[]={0.1f,0.4f,0.5f,1.0f};	//材质背面对漫反射光的反射
+	GLfloat mat_back_specular[]={0.3f,0.3f,0.3f,1.0f};	//材质背面对镜面光的反射
+	glMaterialfv(GL_FRONT,GL_AMBIENT,mat_ambient);
+	glMaterialfv(GL_FRONT,GL_DIFFUSE,mat_diffuse);
+	glMaterialfv(GL_FRONT,GL_SPECULAR,mat_specular);
+	glMaterialf(GL_FRONT,GL_SHININESS,50.0);
+	glMaterialfv(GL_BACK,GL_AMBIENT,mat_back_ambient);
+	glMaterialfv(GL_BACK,GL_DIFFUSE,mat_back_diffuse);
+	glMaterialfv(GL_BACK,GL_SPECULAR,mat_back_specular);
+	if(m_MatEmissionFlag==TRUE){	//设置材质自发光
+		GLfloat mat_emission[]={0.3f,0.2f,0.2f,1.0f};
+		glMaterialfv(GL_FRONT,GL_EMISSION,mat_emission);	//材质自发光
+	}
+	else{
+		GLfloat mat_emission[]={0.0f,0.0f,0.0f,1.0f};
+		glMaterialfv(GL_FRONT,GL_EMISSION,mat_emission);
+	}
+	//设置背景颜色
+	glClearColor(m_iR_BG,m_iG_BG,m_iB_BG,1.0f);
 }
 
 // Draw graphics
@@ -475,7 +557,7 @@ void CGLTest001View::OnSize(UINT nType, int cx, int cy)
 	winHeight=cy/2.0;
 	::glMatrixMode(GL_MODELVIEW);
 	::glLoadIdentity();
-	glClearColor(1.0f,1.0f,1.0f,1.0f);
+	RealEnvironmentSet();
 }
 
 void CGLTest001View::OnDestroy() 
@@ -728,8 +810,7 @@ void CGLTest001View::OnDrawSize()
 	winHeight=cy/2.0;
 	::glMatrixMode(GL_MODELVIEW);
 	::glLoadIdentity();
-	glEnable(GL_DEPTH_TEST);
-	glClearColor(1.0f,1.0,1.0,1.0);
+	RealEnvironmentSet();
 	Invalidate();
 }
 
@@ -872,3 +953,18 @@ void CGLTest001View::OnTimer(UINT nIDEvent)
 	CView::OnTimer(nIDEvent);
 }
 
+//场景设置
+void CGLTest001View::OnEnvironmentset() 
+{
+	// TODO: Add your command handler code here
+	CEnvironmentSetDlg dlg;
+	dlg.m_pView=this;
+	dlg.m_depthFlag=this->m_DepthFlag;
+	dlg.m_lightFlag=this->m_LightFlag;
+	dlg.m_light0=this->m_Light0Flag;
+	dlg.m_light1=this->m_Light1Flag;
+	dlg.m_lightModelFlag=this->m_LightModelFlag;
+	dlg.m_colorMaterialFlag=this->m_MaterialColorFlag;
+	dlg.m_emissionFlag=this->m_MatEmissionFlag;
+	dlg.DoModal();
+}
