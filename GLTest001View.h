@@ -30,7 +30,15 @@
 #define GLQUADS			8
 #define GLQUADSTRIP		9
 #define	GLPOLYGON		10
-
+#define CONE			11
+#define TETRAHEDRON		12
+#define CUBE			13
+#define DODECAHEDRON	14
+#define ICOSAHEDRON		15
+#define OCTAHEDRON		16
+#define SPHERE			17
+#define TORUS			18
+#define TEAPOT			19
 
 
 class CGLTest001View : public CView
@@ -61,6 +69,15 @@ public:
 	int m_flag;				//绘图命令标识
 	int m_Rflag;			//是否拾取操作，0：不，1：是
 	CArray<GLPoint,GLPoint> m_Point_Array;	//拾取顶点集合
+
+	//几何变换
+	GLfloat m_lrMove,m_btMove;	//左右上下移动变量
+	GLfloat m_rAngle;			//旋转角度
+	GLfloat m_Scale;			//缩放比例
+	BOOL m_bAnimation;			//是否采用动画的标识
+
+	//三维
+	GLdouble m_3DRadius;
 
 // Operations
 public:
@@ -121,6 +138,19 @@ protected:
 	afx_msg void OnPointSize();
 	afx_msg void OnLineWidth();
 	afx_msg void OnLinetype();
+	afx_msg void OnAnimation();
+	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnCone();
+	afx_msg void OnCube();
+	afx_msg void OnTetrahedron();
+	afx_msg void OnDodecahedron();
+	afx_msg void OnIcosahedron();
+	afx_msg void OnOctahedron();
+	afx_msg void OnSphere();
+	afx_msg void OnTorus();
+	afx_msg void OnTeapot();
+	afx_msg void OnPolygonFillTool();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

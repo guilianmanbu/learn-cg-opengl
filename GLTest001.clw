@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CPatternDlg
+LastClass=CGLTest001View
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "GLTest001.h"
@@ -15,18 +15,18 @@ Class3=CGLTest001View
 Class4=CMainFrame
 
 ResourceCount=7
-Resource1=IDD_LINEWIDTHDLG_DIALOG
-Resource2=IDR_MAINFRAME
+Resource1=IDD_COORDSETDLG_DIALOG
+Resource2=IDD_POINTSIZEDLG_DIALOG
 Class5=CAboutDlg
 Class6=PolygonFillDlg
 Class7=CoordSetDlg
-Resource3=IDD_POINTSIZEDLG_DIALOG
+Resource3=IDD_POLYGONFILLDLG_DIALOG
 Class8=CCoordSetDlg
-Resource4=IDD_ABOUTBOX
+Resource4=IDD_LINEWIDTHDLG_DIALOG
 Class9=CPointSizeDlg
-Resource5=IDD_COORDSETDLG_DIALOG
+Resource5=IDD_ABOUTBOX
 Class10=CLineWidthDlg
-Resource6=IDD_POLYGONFILLDLG_DIALOG
+Resource6=IDR_MAINFRAME
 Class11=CPatternDlg
 Resource7=IDD_PATTERNDLG_DIALOG
 
@@ -49,7 +49,7 @@ ImplementationFile=GLTest001View.cpp
 Filter=C
 BaseClass=CView
 VirtualFilter=VWC
-LastObject=ID_LINETYPE
+LastObject=ID_POLYGON_FILL
 
 
 [CLS:CMainFrame]
@@ -57,6 +57,9 @@ Type=0
 HeaderFile=MainFrm.h
 ImplementationFile=MainFrm.cpp
 Filter=T
+BaseClass=CFrameWnd
+VirtualFilter=fWC
+LastObject=ID_POLYGON_FILL_TOOL
 
 
 
@@ -101,14 +104,23 @@ Command19=ID_TRIANGLE_FAN
 Command20=ID_QUAD
 Command21=ID_QUAD_STRIP
 Command22=ID_POLYGON
-Command23=ID_POLYGON_FILL
-Command24=ID_COLOR_SET
-Command25=ID_POINT_SIZE
-Command26=ID_LINE_WIDTH
-Command27=ID_LINETYPE
-Command28=ID_DRAW_SIZE
-Command29=ID_APP_ABOUT
-CommandCount=29
+Command23=ID_CONE
+Command24=ID_TETRAHEDRON
+Command25=ID_CUBE
+Command26=ID_DODECAHEDRON
+Command27=ID_ICOSAHEDRON
+Command28=ID_OCTAHEDRON
+Command29=ID_SPHERE
+Command30=ID_TORUS
+Command31=ID_TEAPOT
+Command32=ID_POLYGON_FILL
+Command33=ID_COLOR_SET
+Command34=ID_POINT_SIZE
+Command35=ID_LINE_WIDTH
+Command36=ID_LINETYPE
+Command37=ID_DRAW_SIZE
+Command38=ID_APP_ABOUT
+CommandCount=38
 
 [ACL:IDR_MAINFRAME]
 Type=1
@@ -130,7 +142,7 @@ CommandCount=13
 
 [TB:IDR_MAINFRAME]
 Type=1
-Class=?
+Class=CMainFrame
 Command1=ID_FILE_NEW
 Command2=ID_FILE_OPEN
 Command3=ID_FILE_SAVE
@@ -149,8 +161,9 @@ Command15=ID_TRIANGLE_FAN
 Command16=ID_QUAD
 Command17=ID_QUAD_STRIP
 Command18=ID_POLYGON
-Command19=ID_POLYGON_FILL
-CommandCount=19
+Command19=ID_POLYGON_FILL_TOOL
+Command20=ID_ANIMATION
+CommandCount=20
 
 [DLG:IDD_POLYGONFILLDLG_DIALOG]
 Type=1

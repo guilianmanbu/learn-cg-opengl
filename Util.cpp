@@ -41,7 +41,7 @@ Util::~Util()
 }
 
 void Polygon3DBegin(GLenum type){
-	glEnd();
+	//glEnd();
 	glBegin(type);
 	//Message("000000");
 }

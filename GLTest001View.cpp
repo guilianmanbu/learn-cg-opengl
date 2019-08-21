@@ -52,6 +52,19 @@ BEGIN_MESSAGE_MAP(CGLTest001View, CView)
 	ON_COMMAND(ID_POINT_SIZE, OnPointSize)
 	ON_COMMAND(ID_LINE_WIDTH, OnLineWidth)
 	ON_COMMAND(ID_LINETYPE, OnLinetype)
+	ON_COMMAND(ID_ANIMATION, OnAnimation)
+	ON_WM_KEYDOWN()
+	ON_WM_TIMER()
+	ON_COMMAND(ID_CONE, OnCone)
+	ON_COMMAND(ID_CUBE, OnCube)
+	ON_COMMAND(ID_TETRAHEDRON, OnTetrahedron)
+	ON_COMMAND(ID_DODECAHEDRON, OnDodecahedron)
+	ON_COMMAND(ID_ICOSAHEDRON, OnIcosahedron)
+	ON_COMMAND(ID_OCTAHEDRON, OnOctahedron)
+	ON_COMMAND(ID_SPHERE, OnSphere)
+	ON_COMMAND(ID_TORUS, OnTorus)
+	ON_COMMAND(ID_TEAPOT, OnTeapot)
+	ON_COMMAND(ID_POLYGON_FILL_TOOL, OnPolygonFillTool)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -72,6 +85,12 @@ CGLTest001View::CGLTest001View()
 	m_flag=0;
 	m_Rflag=0;
 	m_bPolygonFill=FALSE;
+	//几何变换
+	m_lrMove=0.0;
+	m_btMove=0.0;
+	m_rAngle=0.0;
+	m_Scale=1.0;
+	m_bAnimation=FALSE;
 }
 
 CGLTest001View::~CGLTest001View()
@@ -178,16 +197,24 @@ BOOL CGLTest001View::SetupPixelFormat(){
 
 void CGLTest001View::RenderScene(){
 	Draw_line();
+	
+	//几何变换. 对 ModelView 矩阵的变换
+	glPushMatrix();  //将当前坐标矩阵压入堆栈
+	glTranslatef(m_lrMove,m_btMove,0);
+	glRotatef(m_rAngle,1.0,0.0,0.0);
+	glRotatef(m_rAngle,.0,1.0f,.0);
+	glRotatef(m_rAngle,.0,.0,1.f);
+	glScalef(m_Scale,m_Scale,m_Scale);
 
 	glColor3f(m_iR,m_iG,m_iB);
 	//Draw_LineStrip();
 	//Draw_Point();
-
 	
+	BOOL setRawVertexes=TRUE;   //是否给gl发送原始拾取点
 	if(m_flag==GLPOINTS){
 		glPointSize(m_PtCurSize); //点的大小
 	}
-	else if(m_flag>=2){
+	else if(m_flag>=GLLINES && m_flag<=GLPOLYGON){
 		glLineWidth(m_LineWidth);  //线宽
 		if(m_LinePattern!=-1){  //线型 
 			glEnable(GL_LINE_STIPPLE);
@@ -199,7 +226,15 @@ void CGLTest001View::RenderScene(){
 		else
 			glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 	}
-	BOOL tessellate=FALSE;
+	else if(m_flag>=CONE){
+		glLineWidth(m_LineWidth);  //线宽
+		if(m_LinePattern!=-1){  //线型 
+			glEnable(GL_LINE_STIPPLE);
+			glLineStipple(1,m_LinePattern);
+		}
+		setRawVertexes=FALSE;
+		m_3DRadius=Win_Size/4.0;
+	}
 	switch(m_flag)
 	{
 		case GLPOINTS:
@@ -230,16 +265,85 @@ void CGLTest001View::RenderScene(){
 			glBegin(GL_QUAD_STRIP);
 			break;
 		case GLPOLYGON:
-			glBegin(GL_POLYGON);
-			tessellate=m_bPolygonFill;
+			if(m_bPolygonFill){
+				Util::PolygonTesslator(m_Point_Array);
+				setRawVertexes=FALSE;
+			}
+			else{
+				glBegin(GL_POLYGON);
+			}
+			break;
+		case CONE:			//圆锥体
+			if(m_bPolygonFill)
+				glutSolidCone(m_3DRadius,m_3DRadius*2,30,30);
+			else
+				glutWireCone(m_3DRadius,m_3DRadius*2,30,30);
+			break;
+		case TETRAHEDRON:	//四面体
+			glScaled(m_3DRadius,m_3DRadius,m_3DRadius);  //缩放变换
+			if(m_bPolygonFill)
+				glutSolidTetrahedron();
+			else
+				glutWireTetrahedron();
+			break;
+		case CUBE:			//立方体
+			if(m_bPolygonFill)
+				glutSolidCube(m_3DRadius);
+			else
+				glutWireCube(m_3DRadius);
+			break;
+		case DODECAHEDRON:	//正十二面体
+			glScaled(m_3DRadius,m_3DRadius,m_3DRadius);  //缩放变换
+			if(m_bPolygonFill)
+				glutSolidDodecahedron();
+			else
+				glutWireDodecahedron();
+			break;
+		case ICOSAHEDRON:	//正二十面体
+			glScaled(m_3DRadius,m_3DRadius,m_3DRadius);  //缩放变换
+			if(m_bPolygonFill)
+				glutSolidIcosahedron();
+			else
+				glutWireIcosahedron();
+			break;
+		case OCTAHEDRON:	//正八面体
+			glScaled(m_3DRadius,m_3DRadius,m_3DRadius);  //缩放变换
+			if(m_bPolygonFill)
+				glutSolidOctahedron();
+			else
+				glutWireOctahedron();
+			break;
+		case SPHERE:		//球体
+			if(m_bPolygonFill)
+				glutSolidSphere(m_3DRadius,30,30);
+			else
+				glutWireSphere(m_3DRadius,30,30);
+			break;
+		case TORUS:			//圆环体
+			if(m_bPolygonFill)
+				glutSolidTorus(m_3DRadius/2.0,m_3DRadius,30,30);
+			else
+				glutWireTorus(m_3DRadius/2.0,m_3DRadius,30,30);
+			break;
+		case TEAPOT:		//茶壶
+			if(m_bPolygonFill)
+				glutSolidTeapot(m_3DRadius);
+			else
+				glutWireTeapot(m_3DRadius);
+			break;
+		default:
+			setRawVertexes=FALSE;
 			break;
 	}
-	SetVertexesToGL(tessellate);  // 传送顶点给GL
+	if(setRawVertexes){
+		SetVertexesToGL(FALSE);  // 传送顶点给GL
+	}
 	glEnd();
 
 	if(m_LinePattern!=-1){
 		glDisable(GL_LINE_STIPPLE);
 	}
+	glPopMatrix();  //恢复原有坐标矩阵
 }
 
 void CGLTest001View::InitOperation(){
@@ -247,6 +351,15 @@ void CGLTest001View::InitOperation(){
 	m_Rflag=1;  //拾取操作
 	m_Point_Array.RemoveAll();
 	glLoadIdentity();
+	m_lrMove=0.0;
+	m_btMove=0.0;
+	m_rAngle=0.0;
+	m_Scale=1.0;
+	if(m_bAnimation==TRUE){
+		m_bAnimation=FALSE;
+		KillTimer(0);
+	}
+	
 	Invalidate();
 }
 
@@ -385,17 +498,6 @@ void CGLTest001View::OnDestroy()
 	m_pDC=NULL;
 }
 
-void CGLTest001View::OnPolygonFill() 
-{
-	// TODO: Add your command handler code here
-	PolygonFillDlg polygonFillDlg;
-	polygonFillDlg.m_bFill=m_bPolygonFill;
-	if(polygonFillDlg.DoModal()==IDOK){
-		m_bPolygonFill=polygonFillDlg.m_bFill;
-		Invalidate();
-	}
-}
-
 void CGLTest001View::OnPoint() 
 {
 	// TODO: Add your command handler code here
@@ -472,6 +574,79 @@ void CGLTest001View::OnPolygon()
 	m_flag=GLPOLYGON;
 	//MessageBox("多边形");
 	InitOperation();
+}
+//圆锥体
+void CGLTest001View::OnCone() 
+{
+	// TODO: Add your command handler code here
+	m_flag=CONE;
+	InitOperation();
+	m_Rflag=0;  //拾取操作
+}
+//立方体
+void CGLTest001View::OnCube() 
+{
+	// TODO: Add your command handler code here
+	m_flag=CUBE;
+	InitOperation();
+	m_Rflag=0;  //拾取操作
+}
+//四面体
+void CGLTest001View::OnTetrahedron() 
+{
+	// TODO: Add your command handler code here
+	m_flag=TETRAHEDRON;
+	InitOperation();
+	m_Rflag=0;  //拾取操作
+}
+//正十二面体
+void CGLTest001View::OnDodecahedron() 
+{
+	// TODO: Add your command handler code here
+	m_flag=DODECAHEDRON;
+	InitOperation();
+	m_Rflag=0;  //拾取操作
+}
+//正二十面体
+void CGLTest001View::OnIcosahedron() 
+{
+	// TODO: Add your command handler code here
+	m_flag=ICOSAHEDRON;
+	InitOperation();
+	m_Rflag=0;  //拾取操作
+}
+//正八面体
+void CGLTest001View::OnOctahedron() 
+{
+	// TODO: Add your command handler code here
+	m_flag=OCTAHEDRON;
+	InitOperation();
+	m_Rflag=0;  //拾取操作
+}
+
+//球体
+void CGLTest001View::OnSphere() 
+{
+	// TODO: Add your command handler code here
+	m_flag=SPHERE;
+	InitOperation();
+	m_Rflag=0;  //拾取操作
+}
+//圆环体
+void CGLTest001View::OnTorus() 
+{
+	// TODO: Add your command handler code here
+	m_flag=TORUS;
+	InitOperation();
+	m_Rflag=0;  //拾取操作
+}
+//茶壶
+void CGLTest001View::OnTeapot() 
+{
+	// TODO: Add your command handler code here
+	m_flag=TEAPOT;
+	InitOperation();
+	m_Rflag=0;  //拾取操作
 }
 
 //左键
@@ -594,6 +769,7 @@ void CGLTest001View::OnLineWidth()
 	}
 }
 
+//设置线型
 void CGLTest001View::OnLinetype() 
 {
 	// TODO: Add your command handler code here
@@ -615,3 +791,84 @@ void CGLTest001View::OnLinetype()
 		Invalidate();
 	}
 }
+
+//多边形区域填充设置-菜单项
+void CGLTest001View::OnPolygonFill() 
+{
+	// TODO: Add your command handler code here
+	PolygonFillDlg polygonFillDlg;
+	polygonFillDlg.m_bFill=m_bPolygonFill;
+	if(polygonFillDlg.DoModal()==IDOK){
+		m_bPolygonFill=polygonFillDlg.m_bFill;
+		Invalidate();
+	}
+}
+//多边形区域填充设置 -工具栏
+void CGLTest001View::OnPolygonFillTool() 
+{
+	// TODO: Add your command handler code here
+	m_bPolygonFill=!m_bPolygonFill;
+	Invalidate();
+}
+
+//动画
+void CGLTest001View::OnAnimation() 
+{
+	// TODO: Add your command handler code here
+	if(m_bAnimation==FALSE){
+		if(m_flag>=GLLINES && m_flag<=GLPOLYGON)
+			if(m_Point_Array.GetSize()<2)
+				return;
+		SetTimer(0,10,NULL);
+		m_bAnimation=TRUE;
+	}
+	else{
+		KillTimer(0);
+		m_bAnimation=FALSE;
+	}
+	Invalidate();
+}
+
+void CGLTest001View::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
+{
+	// TODO: Add your message handler code here and/or call default
+	int invalidate=1;
+	switch(nChar){
+	case VK_UP:
+		if(GetAsyncKeyState(VK_LSHIFT)&&0x8000)  //Shift键是否被按下
+			m_Scale+=0.1;		//设置缩放比例
+		else
+			m_btMove+=0.1;		//设置上下移动
+		break;
+	case VK_DOWN:
+		if(GetAsyncKeyState(VK_LSHIFT)&&0x8000){
+			m_Scale-=0.1;
+			if(m_Scale<=0)
+				m_Scale=0.05;
+		}
+		else
+			m_btMove-=0.1;
+		break;
+	case VK_LEFT:
+		m_lrMove-=0.1;		//设置水平移动
+		break;
+	case VK_RIGHT:
+		m_lrMove+=0.1;
+		break;
+	default:
+		invalidate=0;
+		break;
+	}
+	if(invalidate==1)
+		Invalidate();
+	CView::OnKeyDown(nChar, nRepCnt, nFlags);
+}
+
+void CGLTest001View::OnTimer(UINT nIDEvent) 
+{
+	// TODO: Add your message handler code here and/or call default
+	m_rAngle+=1.0;		//旋转角度
+	Invalidate();
+	CView::OnTimer(nIDEvent);
+}
+

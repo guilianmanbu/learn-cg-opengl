@@ -34,6 +34,17 @@
 #define ID_LINE_WIDTH                   32784
 #define ID_LINETYPE                     32785
 #define ID_DRAW_SIZE                    32786
+#define ID_ANIMATION                    32788
+#define ID_CONE                         32789
+#define ID_TETRAHEDRON                  32790
+#define ID_CUBE                         32791
+#define ID_DODECAHEDRON                 32792
+#define ID_ICOSAHEDRON                  32793
+#define ID_OCTAHEDRON                   32794
+#define ID_SPHERE                       32795
+#define ID_TORUS                        32796
+#define ID_TEAPOT                       32797
+#define ID_POLYGON_FILL_TOOL            32798
 
 // Next default values for new objects
 // 
@@ -41,7 +52,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        130
-#define _APS_NEXT_COMMAND_VALUE         32788
+#define _APS_NEXT_COMMAND_VALUE         32799
 #define _APS_NEXT_CONTROL_VALUE         1009
 #define _APS_NEXT_SYMED_VALUE           109
 #endif
