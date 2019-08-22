@@ -51,7 +51,9 @@ public:
 	Util();
 	virtual ~Util();
 public:
-	static BOOL PolygonTesslator(CArray<GLPoint,GLPoint> &m_Point_Array);
+	static BOOL PolygonTesslator(CArray<GLPoint,GLPoint> &m_Point_Array);//多边形网格化细分
+	static void Unitlize(GLfloat vertex[3]);  //向量规范化处理
+	static void CalCulateNormal(const GLfloat Vertices[3][3],GLfloat Normal[3]);  //计算法向量
 };
 
 

@@ -105,10 +105,14 @@ BEGIN
     BUTTON      ID_QUAD
     BUTTON      ID_QUAD_STRIP
     BUTTON      ID_POLYGON
+    BUTTON      ID_STRETCH
     SEPARATOR
     BUTTON      ID_POLYGON_FILL_TOOL
     BUTTON      ID_ANIMATION
     BUTTON      ID_ENVIRONMENTSET
+    BUTTON      ID_BLEND
+    BUTTON      ID_TRANSPARENT
+    BUTTON      ID_ANTIALIASING
 END
 
 
@@ -295,13 +299,13 @@ BEGIN
                     48,14
 END
 
-IDD_ENVIRONMENTSETDLG_DIALOG DIALOG DISCARDABLE  0, 0, 320, 236
+IDD_ENVIRONMENTSETDLG_DIALOG DIALOG DISCARDABLE  0, 0, 320, 299
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "场景设置"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,238,152,75,43
-    PUSHBUTTON      "Cancel",IDCANCEL,263,213,50,14
+    DEFPUSHBUTTON   "OK",IDOK,140,245,103,45
+    PUSHBUTTON      "Cancel",IDCANCEL,263,276,50,14
     CONTROL         "深度检测",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | 
                     WS_GROUP | WS_TABSTOP,24,21,71,18
     CONTROL         "开启光照",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | 
@@ -314,9 +318,18 @@ BEGIN
                     WS_GROUP | WS_TABSTOP,25,95,62,14
     CONTROL         "使用材料着色（无光照）",IDC_CHECK8,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,25,125,97,10
-    PUSHBUTTON      "设置背景颜色",IDC_BUTTON1,25,191,84,22
+    PUSHBUTTON      "设置背景颜色",IDC_BUTTON1,29,268,84,22
     CONTROL         "开启自发光",IDC_CHECK9,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,26,151,53,10
+    CONTROL         "关",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON | WS_GROUP,
+                    56,181,23,10
+    GROUPBOX        "雾效",IDC_STATIC,25,168,269,49
+    CONTROL         "线性雾",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,100,182,
+                    38,10
+    CONTROL         "指数雾",IDC_RADIO4,"Button",BS_AUTORADIOBUTTON,162,182,
+                    38,10
+    CONTROL         "平方指数雾",IDC_RADIO5,"Button",BS_AUTORADIOBUTTON,219,
+                    182,53,10
 END
 
 
@@ -427,7 +440,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 313
         TOPMARGIN, 7
-        BOTTOMMARGIN, 227
+        BOTTOMMARGIN, 290
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -582,6 +595,14 @@ BEGIN
     ID_TORUS                "圆环体"
     ID_TEAPOT               "茶壶"
     ID_ENVIRONMENTSET       "场景设置"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_STRETCH              "拉伸"
+    ID_BLEND                "颜色混合"
+    ID_TRANSPARENT          "透明"
+    ID_ANTIALIASING         "反走样，抗混淆"
 END
 
 #endif    // Chinese (中国) resources

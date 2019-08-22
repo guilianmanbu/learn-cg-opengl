@@ -67,6 +67,11 @@ BEGIN_MESSAGE_MAP(CGLTest001View, CView)
 	ON_COMMAND(ID_TEAPOT, OnTeapot)
 	ON_COMMAND(ID_POLYGON_FILL_TOOL, OnPolygonFillTool)
 	ON_COMMAND(ID_ENVIRONMENTSET, OnEnvironmentset)
+	ON_COMMAND(ID_STRETCH, OnStretch)
+	ON_UPDATE_COMMAND_UI(ID_STRETCH, OnUpdateStretch)
+	ON_COMMAND(ID_BLEND, OnBlend)
+	ON_COMMAND(ID_TRANSPARENT, OnTransparent)
+	ON_COMMAND(ID_ANTIALIASING, OnAntialiasing)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -77,9 +82,9 @@ CGLTest001View::CGLTest001View()
 {
 	// TODO: add construction code here
 	Win_Size = 6.0;
-	m_iR=0;
-	m_iG=0;
-	m_iB=0;
+	m_iR=1;			//设置绘图颜色
+	m_iG=1;
+	m_iB=1;
 	m_iAlpha=1.0;
 	m_PtCurSize=4.0;
 	m_LineWidth=1.0;
@@ -101,9 +106,13 @@ CGLTest001View::CGLTest001View()
 	m_LightModelFlag=FALSE;		//是否启用光照模型
 	m_MaterialColorFlag=FALSE;	//是否跟踪当前绘图颜色
 	m_MatEmissionFlag=FALSE;		//设置材质是否自发光
-	m_iR_BG=1.0;			//设置背景颜色
-	m_iG_BG=1.0;
-	m_iB_BG=1.0;
+	m_iR_BG=0;			//设置背景颜色
+	m_iG_BG=0;
+	m_iB_BG=0;
+	//颜色混合
+	m_BlendFlag=0;
+	//雾效
+	m_FogMode=0;
 }
 
 CGLTest001View::~CGLTest001View()
@@ -220,6 +229,11 @@ void CGLTest001View::RenderScene(){
 	glScalef(m_Scale,m_Scale,m_Scale);
 
 	glColor3f(m_iR,m_iG,m_iB);
+	glLineWidth(m_LineWidth);	//线宽
+	if(m_LinePattern!=-1){		//线型 
+		glEnable(GL_LINE_STIPPLE);
+		glLineStipple(1,m_LinePattern);
+	}
 	//Draw_LineStrip();
 	//Draw_Point();
 	
@@ -228,25 +242,23 @@ void CGLTest001View::RenderScene(){
 		glPointSize(m_PtCurSize); //点的大小
 	}
 	else if(m_flag>=GLLINES && m_flag<=GLPOLYGON){
-		glLineWidth(m_LineWidth);  //线宽
-		if(m_LinePattern!=-1){  //线型 
-			glEnable(GL_LINE_STIPPLE);
-			glLineStipple(1,m_LinePattern);
-		}
 		//如果是封闭图形，是否填充
 		if(m_bPolygonFill==TRUE)
 			glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		else
 			glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 	}
-	else if(m_flag>=CONE){
-		glLineWidth(m_LineWidth);  //线宽
-		if(m_LinePattern!=-1){  //线型 
-			glEnable(GL_LINE_STIPPLE);
-			glLineStipple(1,m_LinePattern);
-		}
+	else if(m_flag>=CONE && m_flag<=TEAPOT){
 		setRawVertexes=FALSE;
 		m_3DRadius=Win_Size/4.0;
+	}
+	else if(m_flag==STRETCH){
+		setRawVertexes=FALSE;
+		//如果是封闭图形，是否填充
+		if(m_bPolygonFill==TRUE)
+			glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+		else
+			glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 	}
 	switch(m_flag)
 	{
@@ -344,6 +356,9 @@ void CGLTest001View::RenderScene(){
 			else
 				glutWireTeapot(m_3DRadius);
 			break;
+		case STRETCH:		//拉伸
+			Draw_Stretch();
+			break;
 		default:
 			setRawVertexes=FALSE;
 			break;
@@ -356,6 +371,9 @@ void CGLTest001View::RenderScene(){
 	if(m_LinePattern!=-1){
 		glDisable(GL_LINE_STIPPLE);
 	}
+
+	Draw_Blend();
+
 	glPopMatrix();  //恢复原有坐标矩阵
 }
 
@@ -511,6 +529,121 @@ void CGLTest001View::Draw_LineStrip(){
 			glDisable(GL_LINE_STIPPLE);
 		}
 	}
+}
+
+void CGLTest001View::Draw_Stretch(){
+	GLfloat ver[3][3],nor[3];
+	GLPoint pt,pt1,pt2,pt3;
+	//绘制上下两个底，首先绘制下地面，假设顶点是逆时针走向
+	if(m_fLength>0)
+		glNormal3f(0.0,0.0,-1.0);
+	else
+		glNormal3f(0.0,0.0,1.0);
+	Util::PolygonTesslator(m_Pt_Array_Polygon);  //利用多边形网格化细分多边形
+	//绘制上底面
+	if(m_fLength>0)
+		glNormal3f(0.0,0.0,1.0);
+	else
+		glNormal3f(0.0,0.0,-1.0);
+	CArray<GLPoint,GLPoint> m_Pt_Array_up;
+	for(int i=this->m_Pt_Array_Polygon.GetSize()-1;i>=0;i--){
+		pt=m_Pt_Array_Polygon[i];
+		pt.z+=m_fLength;
+		m_Pt_Array_up.Add(pt);
+	}
+	Util::PolygonTesslator(m_Pt_Array_up);
+	//绘制侧面，首先计算外法向量
+	for(i=0;i<this->m_Pt_Array_Polygon.GetSize();i++){
+		pt=m_Pt_Array_Polygon[i];
+		if(i<this->m_Pt_Array_Polygon.GetSize()-1)
+			pt1=m_Pt_Array_Polygon[i+1];
+		else
+			pt1=m_Pt_Array_Polygon[0];
+		pt2=pt1;
+		pt2.z+=m_fLength;
+		pt3=pt;
+		pt3.z+=m_fLength;
+		//构造向量点
+		ver[0][0]=pt.x; ver[0][1]=pt.y; ver[0][2]=pt.z;
+		ver[1][0]=pt1.x; ver[1][1]=pt1.y; ver[1][2]=pt1.z;
+		ver[2][0]=pt2.x; ver[2][1]=pt2.y; ver[2][2]=pt2.z;
+		Util::CalCulateNormal(ver,nor);
+		glBegin(GL_POLYGON);
+			glNormal3fv(nor);
+			glVertex3f(pt.x,pt.y,pt.z);
+			glVertex3f(pt1.x,pt1.y,pt1.z);
+			glVertex3f(pt2.x,pt2.y,pt2.z);
+			glVertex3f(pt3.x,pt3.y,pt3.z);
+		glEnd();
+	}
+}
+
+void CGLTest001View::Draw_Blend(){
+	if(m_BlendFlag==0)
+		return;
+	else if(m_BlendFlag==1){	//混合
+		GLUquadricObj * obj;	//定义一个二次曲面指针
+
+		glPushMatrix();
+		glTranslatef(0.0,Win_Size/3,0.0);
+		glColor4f(1.0,0.0,0.0,1.0);
+		obj = gluNewQuadric();  //生成二次曲面对象
+		gluDisk(obj,0,Win_Size/3,30,1);
+		glPopMatrix();
+
+		glPushMatrix();
+		glTranslatef(-Win_Size/5.0,0,-Win_Size/5);
+		glColor4f(0.0,1.0,0.0,1.0);
+		obj=gluNewQuadric();	//生成二次曲面对象
+		gluDisk(obj,0,Win_Size/3,30,1);
+		glPopMatrix();
+
+		glPushMatrix();
+		glTranslatef(Win_Size/5.0,0,-Win_Size/3.0);
+		glColor4f(0.0,0.0,1.0,1.0);
+		obj=gluNewQuadric();	//生成二次曲面对象
+		gluDisk(obj,0,Win_Size/3,30,1);
+		glPopMatrix();
+	}
+	else if(m_BlendFlag==2){  //透明
+		glPushMatrix();
+		glTranslatef(0.0,0.0,-Win_Size/2.0);
+		glColor4f(1.0,0.0,0.0,1.0);
+		m_3DRadius=Win_Size/4.0;
+		if(m_bPolygonFill)		//绘制一个圆环
+			glutSolidTorus(m_3DRadius/2.0,m_3DRadius,30,30);
+		else
+			glutWireTorus(m_3DRadius/2.0,m_3DRadius,30,30);
+		glPopMatrix();
+
+		glPushMatrix();
+		glTranslatef(Win_Size/4.0,Win_Size/4.0,Win_Size/2.0);
+		glColor4f(0.0,1.0,0.0,0.4f);
+		glutSolidSphere(Win_Size/2.0,30.0,30.0);	//绘制一个球
+		glPopMatrix();
+	}
+}
+
+void CGLTest001View::SetFogMode(){
+	if(m_FogMode==0){
+		glDisable(GL_FOG);
+	}
+	else{
+		glEnable(GL_FOG);
+		if(m_FogMode==1)
+			glFogi(GL_FOG_MODE,GL_LINEAR);
+		else if(m_FogMode==2)
+			glFogi(GL_FOG_MODE,GL_EXP);
+		else if(m_FogMode==3)
+			glFogi(GL_FOG_MODE,GL_EXP2);
+		GLfloat fogColor[]={1,1,1,1.0};
+		glFogfv(GL_FOG_COLOR,fogColor);
+		glFogf(GL_FOG_DENSITY,0.6f);
+		glHint(GL_FOG_HINT,GL_DONT_CARE);
+		glFogf(GL_FOG_START,-Win_Size);
+		glFogf(GL_FOG_END,Win_Size);
+	}
+	Invalidate();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -966,5 +1099,73 @@ void CGLTest001View::OnEnvironmentset()
 	dlg.m_lightModelFlag=this->m_LightModelFlag;
 	dlg.m_colorMaterialFlag=this->m_MaterialColorFlag;
 	dlg.m_emissionFlag=this->m_MatEmissionFlag;
+	dlg.m_fogMode=this->m_FogMode;
 	dlg.DoModal();
+}
+//拉伸
+void CGLTest001View::OnStretch() 
+{
+	// TODO: Add your command handler code here
+	m_Pt_Array_Polygon.RemoveAll();
+	m_Pt_Array_Polygon.Append(this->m_Point_Array);
+	m_fLength=Win_Size/2.0;
+	m_flag=STRETCH;
+	InitOperation();
+	m_Rflag=0;
+}
+//拉伸UI
+void CGLTest001View::OnUpdateStretch(CCmdUI* pCmdUI) 
+{
+	// TODO: Add your command update UI handler code here
+	pCmdUI->Enable(m_flag==GLLINELOOP&&m_Point_Array.GetSize()>=3);
+}
+//颜色混合
+void CGLTest001View::OnBlend() 
+{
+	// TODO: Add your command handler code here
+	if(m_BlendFlag==0){
+		glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ONE_MINUS_SRC_COLOR);
+		glEnable(GL_BLEND);
+		m_BlendFlag=1;
+	}
+	else{
+		glDisable(GL_BLEND);
+		m_BlendFlag=0;
+	}
+	Invalidate();
+}
+
+//透明
+void CGLTest001View::OnTransparent() 
+{
+	// TODO: Add your command handler code here
+	if(m_BlendFlag==0){
+		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+		m_BlendFlag=2;
+	}
+	else{
+		glDisable(GL_BLEND);
+		m_BlendFlag=0;
+	}
+	Invalidate();
+}
+//反走样，抗混淆
+void CGLTest001View::OnAntialiasing() 
+{
+	// TODO: Add your command handler code here
+	if(m_BlendFlag==0){
+		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+		glEnable(GL_LINE_SMOOTH);
+		glHint(GL_LINE_SMOOTH_HINT,GL_NICEST);
+		glHint(GL_POINT_SMOOTH_HINT,GL_NICEST);
+		m_BlendFlag=3;
+	}
+	else{
+		glDisable(GL_BLEND);
+		glDisable(GL_LINE_SMOOTH);
+		m_BlendFlag=0;
+	}
+	Invalidate();
 }

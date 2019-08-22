@@ -51,7 +51,7 @@ ImplementationFile=GLTest001View.cpp
 Filter=C
 BaseClass=CView
 VirtualFilter=VWC
-LastObject=CGLTest001View
+LastObject=ID_STRETCH
 
 
 [CLS:CMainFrame]
@@ -61,7 +61,7 @@ ImplementationFile=MainFrm.cpp
 Filter=T
 BaseClass=CFrameWnd
 VirtualFilter=fWC
-LastObject=CMainFrame
+LastObject=ID_ANTIALIASING
 
 
 
@@ -164,10 +164,14 @@ Command15=ID_TRIANGLE_FAN
 Command16=ID_QUAD
 Command17=ID_QUAD_STRIP
 Command18=ID_POLYGON
-Command19=ID_POLYGON_FILL_TOOL
-Command20=ID_ANIMATION
-Command21=ID_ENVIRONMENTSET
-CommandCount=21
+Command19=ID_STRETCH
+Command20=ID_POLYGON_FILL_TOOL
+Command21=ID_ANIMATION
+Command22=ID_ENVIRONMENTSET
+Command23=ID_BLEND
+Command24=ID_TRANSPARENT
+Command25=ID_ANTIALIASING
+CommandCount=25
 
 [DLG:IDD_POLYGONFILLDLG_DIALOG]
 Type=1
@@ -283,7 +287,7 @@ VirtualFilter=dWC
 [DLG:IDD_ENVIRONMENTSETDLG_DIALOG]
 Type=1
 Class=CEnvironmentSetDlg
-ControlCount=10
+ControlCount=15
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
 Control3=IDC_CHECK1,button,1342373891
@@ -294,6 +298,11 @@ Control7=IDC_CHECK7,button,1342373891
 Control8=IDC_CHECK8,button,1342373891
 Control9=IDC_BUTTON1,button,1342242816
 Control10=IDC_CHECK9,button,1342242819
+Control11=IDC_RADIO2,button,1342308361
+Control12=IDC_STATIC,button,1342177287
+Control13=IDC_RADIO3,button,1342177289
+Control14=IDC_RADIO4,button,1342177289
+Control15=IDC_RADIO5,button,1342177289
 
 [CLS:CEnvironmentSetDlg]
 Type=0
@@ -302,5 +311,5 @@ ImplementationFile=EnvironmentSetDlg.cpp
 BaseClass=CDialog
 Filter=D
 VirtualFilter=dWC
-LastObject=IDC_BUTTON1
+LastObject=IDC_RADIO5
 

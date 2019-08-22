@@ -82,3 +82,32 @@ BOOL Util::PolygonTesslator(CArray<GLPoint,GLPoint> &m_Point_Array){
 	delete[] quad;
 	return TRUE;
 }
+
+//向量规范化处理
+void Util::Unitlize(GLfloat vertex[3]){
+	GLfloat len=GLfloat(sqrt(vertex[0]*vertex[0]+vertex[1]*vertex[1]+vertex[2]*vertex[2]));
+	if(len==0.0)
+		len=1.0f;
+	vertex[0]/=len;
+	vertex[1]/=len;
+	vertex[2]/=len;
+}
+
+//计算法向量
+void Util::CalCulateNormal(const GLfloat Vertices[3][3],GLfloat Normal[3]){
+	GLfloat v1[3],v2[3];
+
+	v1[0]=Vertices[1][0]-Vertices[0][0];
+	v1[1]=Vertices[1][1]-Vertices[0][1];
+	v1[2]=Vertices[1][2]-Vertices[0][2];
+
+	v2[0]=Vertices[2][0]-Vertices[1][0];
+	v2[1]=Vertices[2][1]-Vertices[1][1];
+	v2[2]=Vertices[2][2]-Vertices[1][2];
+
+	Normal[0]=v1[1]*v2[2]-v1[2]*v2[1];
+	Normal[1]=v1[0]*v2[2]-v1[2]*v2[0];
+	Normal[2]=v1[2]*v2[0]-v1[0]*v2[2];
+
+	Util::Unitlize(Normal);
+} 

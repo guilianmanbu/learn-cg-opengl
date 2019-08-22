@@ -28,6 +28,7 @@ public:
 	BOOL	m_lightModelFlag;
 	BOOL	m_colorMaterialFlag;
 	BOOL	m_emissionFlag;
+	int		m_fogMode;
 	//}}AFX_DATA
 
 
@@ -51,6 +52,10 @@ protected:
 	afx_msg void OnCheckMatColor();
 	afx_msg void OnCheckEmission();
 	afx_msg void OnBGColor();
+	afx_msg void OnFogDisable();
+	afx_msg void OnFogLinear();
+	afx_msg void OnFogEXP();
+	afx_msg void OnFogEXP2();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 public:

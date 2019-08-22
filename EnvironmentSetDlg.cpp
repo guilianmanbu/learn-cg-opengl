@@ -27,6 +27,7 @@ CEnvironmentSetDlg::CEnvironmentSetDlg(CWnd* pParent /*=NULL*/)
 	m_lightModelFlag = FALSE;
 	m_colorMaterialFlag = FALSE;
 	m_emissionFlag = FALSE;
+	m_fogMode = -1;
 	//}}AFX_DATA_INIT
 }
 
@@ -42,6 +43,7 @@ void CEnvironmentSetDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHECK7, m_lightModelFlag);
 	DDX_Check(pDX, IDC_CHECK8, m_colorMaterialFlag);
 	DDX_Check(pDX, IDC_CHECK9, m_emissionFlag);
+	DDX_Radio(pDX, IDC_RADIO2, m_fogMode);
 	//}}AFX_DATA_MAP
 }
 
@@ -56,6 +58,10 @@ BEGIN_MESSAGE_MAP(CEnvironmentSetDlg, CDialog)
 	ON_BN_CLICKED(IDC_CHECK8, OnCheckMatColor)
 	ON_BN_CLICKED(IDC_CHECK9, OnCheckEmission)
 	ON_BN_CLICKED(IDC_BUTTON1, OnBGColor)
+	ON_BN_CLICKED(IDC_RADIO2, OnFogDisable)
+	ON_BN_CLICKED(IDC_RADIO3, OnFogLinear)
+	ON_BN_CLICKED(IDC_RADIO4, OnFogEXP)
+	ON_BN_CLICKED(IDC_RADIO5, OnFogEXP2)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -147,4 +153,40 @@ void CEnvironmentSetDlg::OnBGColor()
 		this->m_pView->RealEnvironmentSet();
 		this->m_pView->Invalidate();
 	}
+}
+
+void CEnvironmentSetDlg::OnFogDisable() 
+{
+	// TODO: Add your control notification handler code here
+	UpdateData(TRUE);
+	this->m_pView->m_FogMode=this->m_fogMode;
+	this->m_pView->SetFogMode();
+	UpdateData(FALSE);
+}
+
+void CEnvironmentSetDlg::OnFogLinear() 
+{
+	// TODO: Add your control notification handler code here
+	UpdateData(TRUE);
+	this->m_pView->m_FogMode=this->m_fogMode;
+	this->m_pView->SetFogMode();
+	UpdateData(FALSE);
+}
+
+void CEnvironmentSetDlg::OnFogEXP() 
+{
+	// TODO: Add your control notification handler code here
+	UpdateData(TRUE);
+	this->m_pView->m_FogMode=this->m_fogMode;
+	this->m_pView->SetFogMode();
+	UpdateData(FALSE);
+}
+
+void CEnvironmentSetDlg::OnFogEXP2() 
+{
+	// TODO: Add your control notification handler code here
+	UpdateData(TRUE);
+	this->m_pView->m_FogMode=this->m_fogMode;
+	this->m_pView->SetFogMode();
+	UpdateData(FALSE);
 }

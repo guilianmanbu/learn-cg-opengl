@@ -39,6 +39,7 @@
 #define SPHERE			17
 #define TORUS			18
 #define TEAPOT			19
+#define STRETCH			20
 
 
 class CGLTest001View : public CView
@@ -91,6 +92,16 @@ public:
 	GLfloat m_iG_BG;
 	GLfloat m_iB_BG;
 
+	//拉伸
+	CArray<GLPoint,GLPoint> m_Pt_Array_Polygon;	//多边形顶点集合
+	GLfloat m_fLength;			//拉伸长度
+
+	//颜色混合
+	int m_BlendFlag;			//颜色混合模式
+
+	//雾效
+	int m_FogMode;
+
 // Operations
 public:
 	BOOL InitializeOpenGL();		// OpenGL初始化
@@ -105,6 +116,9 @@ public:
 	void Draw_line();
 	void Draw_LineStrip();
 	void Draw_Point();
+	void Draw_Stretch();
+	void Draw_Blend();
+	void SetFogMode();
 	void SetVertexesToGL();
 
 // Overrides
@@ -165,6 +179,11 @@ protected:
 	afx_msg void OnTeapot();
 	afx_msg void OnPolygonFillTool();
 	afx_msg void OnEnvironmentset();
+	afx_msg void OnStretch();
+	afx_msg void OnUpdateStretch(CCmdUI* pCmdUI);
+	afx_msg void OnBlend();
+	afx_msg void OnTransparent();
+	afx_msg void OnAntialiasing();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
