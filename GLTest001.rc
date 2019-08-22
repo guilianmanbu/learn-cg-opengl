@@ -113,6 +113,7 @@ BEGIN
     BUTTON      ID_BLEND
     BUTTON      ID_TRANSPARENT
     BUTTON      ID_ANTIALIASING
+    BUTTON      ID_SELECT
 END
 
 
@@ -603,6 +604,7 @@ BEGIN
     ID_BLEND                "颜色混合"
     ID_TRANSPARENT          "透明"
     ID_ANTIALIASING         "反走样，抗混淆"
+    ID_SELECT               "选取"
 END
 
 #endif    // Chinese (中国) resources

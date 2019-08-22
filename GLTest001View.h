@@ -40,6 +40,7 @@
 #define TORUS			18
 #define TEAPOT			19
 #define STRETCH			20
+#define SELECT			21
 
 
 class CGLTest001View : public CView
@@ -110,6 +111,7 @@ public:
 	void RenderScene();				//渲染函数
 	void InitOperation();			//绘图操作初始化设置
 	void RealEnvironmentSet();		//真实感设置函数
+	void DoSelection(GLfloat xPos,GLfloat yPos);	//选取
 
 // Draw graphic
 public:
@@ -118,6 +120,7 @@ public:
 	void Draw_Point();
 	void Draw_Stretch();
 	void Draw_Blend();
+	void Draw_Select();
 	void SetFogMode();
 	void SetVertexesToGL();
 
@@ -184,6 +187,7 @@ protected:
 	afx_msg void OnBlend();
 	afx_msg void OnTransparent();
 	afx_msg void OnAntialiasing();
+	afx_msg void OnSelect();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

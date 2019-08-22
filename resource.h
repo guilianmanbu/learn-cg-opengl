@@ -28,7 +28,6 @@
 #define IDC_CHECK9                      1017
 #define IDC_RADIO4                      1021
 #define IDC_RADIO5                      1022
-#define IDC_BUTTON2                     1023
 #define ID_POLYGON_FILL                 32771
 #define ID_POINT                        32772
 #define ID_LINE                         32773
@@ -61,6 +60,7 @@
 #define ID_BLEND                        32802
 #define ID_TRANSPARENT                  32803
 #define ID_ANTIALIASING                 32804
+#define ID_SELECT                       32805
 
 // Next default values for new objects
 // 
@@ -68,7 +68,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        130
-#define _APS_NEXT_COMMAND_VALUE         32805
+#define _APS_NEXT_COMMAND_VALUE         32806
 #define _APS_NEXT_CONTROL_VALUE         1024
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

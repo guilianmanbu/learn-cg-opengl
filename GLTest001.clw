@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CEnvironmentSetDlg
+LastClass=CGLTest001View
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "GLTest001.h"
@@ -15,20 +15,20 @@ Class3=CGLTest001View
 Class4=CMainFrame
 
 ResourceCount=8
-Resource1=IDD_COORDSETDLG_DIALOG
-Resource2=IDD_LINEWIDTHDLG_DIALOG
+Resource1=IDR_MAINFRAME
+Resource2=IDD_POLYGONFILLDLG_DIALOG
 Class5=CAboutDlg
 Class6=PolygonFillDlg
 Class7=CoordSetDlg
-Resource3=IDD_POLYGONFILLDLG_DIALOG
+Resource3=IDD_PATTERNDLG_DIALOG
 Class8=CCoordSetDlg
-Resource4=IDD_PATTERNDLG_DIALOG
+Resource4=IDD_COORDSETDLG_DIALOG
 Class9=CPointSizeDlg
-Resource5=IDD_ABOUTBOX
+Resource5=IDD_LINEWIDTHDLG_DIALOG
 Class10=CLineWidthDlg
-Resource6=IDR_MAINFRAME
+Resource6=IDD_POINTSIZEDLG_DIALOG
 Class11=CPatternDlg
-Resource7=IDD_POINTSIZEDLG_DIALOG
+Resource7=IDD_ABOUTBOX
 Class12=CEnvironmentSetDlg
 Resource8=IDD_ENVIRONMENTSETDLG_DIALOG
 
@@ -61,7 +61,7 @@ ImplementationFile=MainFrm.cpp
 Filter=T
 BaseClass=CFrameWnd
 VirtualFilter=fWC
-LastObject=ID_ANTIALIASING
+LastObject=ID_SELECT
 
 
 
@@ -171,7 +171,8 @@ Command22=ID_ENVIRONMENTSET
 Command23=ID_BLEND
 Command24=ID_TRANSPARENT
 Command25=ID_ANTIALIASING
-CommandCount=25
+Command26=ID_SELECT
+CommandCount=26
 
 [DLG:IDD_POLYGONFILLDLG_DIALOG]
 Type=1

@@ -72,6 +72,7 @@ BEGIN_MESSAGE_MAP(CGLTest001View, CView)
 	ON_COMMAND(ID_BLEND, OnBlend)
 	ON_COMMAND(ID_TRANSPARENT, OnTransparent)
 	ON_COMMAND(ID_ANTIALIASING, OnAntialiasing)
+	ON_COMMAND(ID_SELECT, OnSelect)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -359,6 +360,10 @@ void CGLTest001View::RenderScene(){
 		case STRETCH:		//拉伸
 			Draw_Stretch();
 			break;
+		case SELECT:
+			setRawVertexes=FALSE;
+			Draw_Select();
+			break;
 		default:
 			setRawVertexes=FALSE;
 			break;
@@ -475,6 +480,79 @@ void CGLTest001View::RealEnvironmentSet(){
 	}
 	//设置背景颜色
 	glClearColor(m_iR_BG,m_iG_BG,m_iB_BG,1.0f);
+}
+//选取
+void CGLTest001View::DoSelection(GLfloat xPos,GLfloat yPos){
+	GLint hits,viewport[4];
+	int cx,cy;
+	GLuint SelBuff[64];
+	////创建选择缓冲器
+	glSelectBuffer(64,SelBuff);
+
+	////调用矩阵操作函数，切换到投影矩阵模式，然后将其压栈，并置为单位矩阵
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+
+	////生成拾取矩阵
+	glGetIntegerv(GL_VIEWPORT,viewport);		//获得窗口数据
+	gluPickMatrix(xPos,viewport[3]-yPos+viewport[1],2,2,viewport);	//生成拾取矩阵
+
+	//设置与渲染模式下相同的投影矩阵
+	cx=winWidth*2;
+	cy=winHeight*2;
+	glViewport(0,0,cx,cy);
+	if(cx<cy){
+		winWidth=Win_Size;
+		winHeight=Win_Size/aspect_ratio;
+	}
+	else{
+		winWidth=Win_Size*aspect_ratio;
+		winHeight=Win_Size;
+	}
+	glOrtho(-winWidth,winWidth,-winHeight,winHeight,-Win_Size*5,Win_Size*5);
+	winWidth=cx/2.0;
+	winHeight=cy/2.0;
+
+	//切换渲染模式到 SELECT 模式
+	glRenderMode(GL_SELECT);
+	////渲染并搜集单击
+	RenderScene();
+	hits=glRenderMode(GL_RENDER);
+
+	////返回投影模式
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+
+	////返回模型绘图模式
+	glMatrixMode(GL_MODELVIEW);
+
+	//处理选择拾取对象
+	if(hits==1){
+		int count=0;
+		switch(SelBuff[3]){
+			case SPHERE:
+				count=SelBuff[0];
+				if(count==2){
+					if(SelBuff[4]==CUBE)
+						AfxMessageBox("点中了球-立方体");
+					else if(SelBuff[4]==SPHERE)
+						AfxMessageBox("点中了球-球");
+				}
+				else
+					AfxMessageBox("点中了球");
+				break;
+			case CUBE:
+				AfxMessageBox("点中了立方体");
+				break;
+			case CONE:
+				AfxMessageBox("点中了圆锥体");
+				break;
+			case TEAPOT:
+				AfxMessageBox("点中了茶壶");
+				break;
+		}
+	}
 }
 
 // Draw graphics
@@ -622,6 +700,53 @@ void CGLTest001View::Draw_Blend(){
 		glutSolidSphere(Win_Size/2.0,30.0,30.0);	//绘制一个球
 		glPopMatrix();
 	}
+}
+//选取
+void CGLTest001View::Draw_Select(){
+	if(m_flag!=SELECT)
+		return;
+
+	glPushMatrix();
+		glInitNames();						//创建名字堆栈
+		glPushName(0);						//名字堆栈中压入0
+		glColor3f(1.0f,1.0f,0.0f);
+		glPushMatrix();	
+			glTranslatef(-Win_Size/2.0,Win_Size/2.0,0.0f);
+			glLoadName(SPHERE);				//将球体的名字压入堆栈
+			glutSolidSphere(Win_Size/4.0,30,30);	//绘制球体
+			glTranslatef(-Win_Size/4.0,-Win_Size/4.0,0.0f);
+			glColor3f(0.0,0.0,0.5);
+			glPushName(CUBE);				//和球有层次关系的立方体名字压入堆栈
+			glutSolidCube(Win_Size/5.0);	//绘制立方体
+			glPopName();					//堆栈中弹出球体名字
+			glTranslatef(Win_Size/2.0,0.0,0.0);
+			glColor3f(0.0,0.0,0.5);			
+			glPushName(SPHERE);				//和球有层次关系的球体名字压入堆栈
+			glutSolidSphere(Win_Size/5.0,30,30);	//绘制球体
+			glPopName();					//堆栈中弹出球体名字
+		glPopMatrix();
+		
+		glColor3f(0.5f,0.0,0.0);
+		glPushMatrix();						
+			glTranslatef(Win_Size/2.0,Win_Size/2.0,0.0);
+			glLoadName(CUBE);				//将立方体的名字压入堆栈
+			glutSolidCube(Win_Size/4.0);	//绘制立方体
+		glPopMatrix();
+
+		glColor3f(0.5,0.5,1.0);
+		glPushMatrix();
+			glTranslatef(-Win_Size/2.0,-Win_Size/2.0,0.0);
+			glLoadName(CONE);				//将圆锥的名字压入堆栈/
+			glutSolidCone(Win_Size/4.0,Win_Size/4.0,20,20);		//绘制圆锥体
+		glPopMatrix();
+
+		glColor3f(0.0,0.0,1.0);
+		glPushMatrix();
+			glTranslatef(Win_Size/2.0,-Win_Size/2.0,0.0);
+			glLoadName(TEAPOT);				//将茶壶的名字压入堆栈
+			glutSolidTeapot(Win_Size/4.0);	//绘制茶壶
+		glPopMatrix();
+	glPopMatrix();
 }
 
 void CGLTest001View::SetFogMode(){
@@ -891,6 +1016,11 @@ void CGLTest001View::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 		m_Point_Array.Add(pt);
 		Invalidate();
+	}
+	else if(m_Rflag==0){
+		if(m_flag==SELECT){
+			DoSelection(point.x,point.y);
+		}
 	}
 	CView::OnLButtonDown(nFlags, point);
 }
@@ -1168,4 +1298,12 @@ void CGLTest001View::OnAntialiasing()
 		m_BlendFlag=0;
 	}
 	Invalidate();
+}
+
+void CGLTest001View::OnSelect() 
+{
+	// TODO: Add your command handler code here
+	m_flag=SELECT;
+	InitOperation();
+	m_Rflag=0;
 }
