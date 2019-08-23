@@ -2,35 +2,37 @@
 
 [General Info]
 Version=1
-LastClass=CGLTest001View
+LastClass=CImageModeDlg
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "GLTest001.h"
 LastPage=0
 
-ClassCount=12
+ClassCount=13
 Class1=CGLTest001App
 Class2=CGLTest001Doc
 Class3=CGLTest001View
 Class4=CMainFrame
 
-ResourceCount=8
-Resource1=IDD_POINTSIZEDLG_DIALOG
-Resource2=IDD_PATTERNDLG_DIALOG
+ResourceCount=9
+Resource1=IDR_MAINFRAME
+Resource2=IDD_POLYGONFILLDLG_DIALOG
 Class5=CAboutDlg
 Class6=PolygonFillDlg
 Class7=CoordSetDlg
-Resource3=IDD_COORDSETDLG_DIALOG
+Resource3=IDD_PATTERNDLG_DIALOG
 Class8=CCoordSetDlg
-Resource4=IDR_MAINFRAME
+Resource4=IDD_COORDSETDLG_DIALOG
 Class9=CPointSizeDlg
-Resource5=IDD_POLYGONFILLDLG_DIALOG
+Resource5=IDD_LINEWIDTHDLG_DIALOG
 Class10=CLineWidthDlg
-Resource6=IDD_ABOUTBOX
+Resource6=IDD_POINTSIZEDLG_DIALOG
 Class11=CPatternDlg
-Resource7=IDD_LINEWIDTHDLG_DIALOG
+Resource7=IDD_ABOUTBOX
 Class12=CEnvironmentSetDlg
 Resource8=IDD_ENVIRONMENTSETDLG_DIALOG
+Class13=CImageModeDlg
+Resource9=IDD_IMAGEMODEDLG_DIALOG
 
 [CLS:CGLTest001App]
 Type=0
@@ -61,7 +63,7 @@ ImplementationFile=MainFrm.cpp
 Filter=T
 BaseClass=CFrameWnd
 VirtualFilter=fWC
-LastObject=ID_BITMAP
+LastObject=ID_IMAGEFLAG
 
 
 
@@ -173,7 +175,8 @@ Command24=ID_TRANSPARENT
 Command25=ID_ANTIALIASING
 Command26=ID_SELECT
 Command27=ID_BITMAP
-CommandCount=27
+Command28=ID_IMAGEFLAG
+CommandCount=28
 
 [DLG:IDD_POLYGONFILLDLG_DIALOG]
 Type=1
@@ -314,4 +317,28 @@ BaseClass=CDialog
 Filter=D
 VirtualFilter=dWC
 LastObject=IDC_RADIO5
+
+[DLG:IDD_IMAGEMODEDLG_DIALOG]
+Type=1
+Class=CImageModeDlg
+ControlCount=10
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+Control3=IDC_RADIO1,button,1342308361
+Control4=IDC_RADIO2,button,1342177289
+Control5=IDC_RADIO3,button,1342177289
+Control6=IDC_RADIO4,button,1342177289
+Control7=IDC_RADIO5,button,1342177289
+Control8=IDC_RADIO6,button,1342177289
+Control9=IDC_RADIO7,button,1342177289
+Control10=IDC_RADIO8,button,1342177289
+
+[CLS:CImageModeDlg]
+Type=0
+HeaderFile=ImageModeDlg.h
+ImplementationFile=ImageModeDlg.cpp
+BaseClass=CDialog
+Filter=D
+VirtualFilter=dWC
+LastObject=CImageModeDlg
 

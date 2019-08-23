@@ -13,6 +13,7 @@
 #include "LineWidthDlg.h"
 #include "PatternDlg.h"
 #include "EnvironmentSetDlg.h"
+#include "ImageModeDlg.h"
 
 #pragma comment(lib,"glaux")
 #pragma comment(lib,"glut32")
@@ -107,6 +108,7 @@ BEGIN_MESSAGE_MAP(CGLTest001View, CView)
 	ON_COMMAND(ID_SELECT, OnSelect)
 	ON_COMMAND(ID_BITMAP, OnBitmap)
 	ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
+	ON_COMMAND(ID_IMAGEFLAG, OnImageflag)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -150,6 +152,7 @@ CGLTest001View::CGLTest001View()
 	m_FogMode=0;
 	//图像
 	m_pImage=NULL;
+	m_ImageFlag=GLNULL;
 }
 
 CGLTest001View::~CGLTest001View()
@@ -255,21 +258,7 @@ BOOL CGLTest001View::SetupPixelFormat(){
 }
 
 void CGLTest001View::RenderScene(){
-	
-	if(m_pImage){ //绘制图像
-		GLfloat u,v; //投影空间逻辑坐标，与像素坐标通过投影矩阵相互映射
-		if(aspect_ratio<1){	//宽不足则以宽为基准，即宽不变，高缩放
-			u=-m_iWidth/winWidth/2.0*Win_Size;
-			v=-m_iHeight/winWidth/2.0*Win_Size;
-		}
-		else{	//高不足则以高为基准，即高不动，宽缩放
-			u=-m_iWidth/winHeight/2.0*Win_Size;
-			v=-m_iHeight/winHeight/2.0*Win_Size;
-		}
-		glRasterPos2f(u,v);		//屏幕中心
-		glDrawPixels(m_iWidth,m_iHeight,GL_RGB,GL_UNSIGNED_BYTE,m_pImage);
-	}		
-
+	Draw_Image();
 	Draw_line();  //水印？哈哈
 	
 	//几何变换. 对 ModelView 矩阵的变换
@@ -817,6 +806,98 @@ void CGLTest001View::Draw_Select(){
 			glutSolidTeapot(Win_Size/4.0);	//绘制茶壶
 		glPopMatrix();
 	glPopMatrix();
+}
+
+void CGLTest001View::Draw_Image(){
+	if(m_pImage){ //绘制图像
+		GLfloat halfW,halfH; //投影空间逻辑坐标，与像素坐标通过投影矩阵相互映射
+		if(aspect_ratio<1){	//宽不足则以宽为基准，即宽不变，高缩放
+			halfW=m_iWidth/winWidth/2.0*Win_Size;
+			halfH=m_iHeight/winWidth/2.0*Win_Size;
+		}
+		else{	//高不足则以高为基准，即高不动，宽缩放
+			halfW=m_iWidth/winHeight/2.0*Win_Size;
+			halfH=m_iHeight/winHeight/2.0*Win_Size;
+		}
+		
+		GLubyte * pModefied=NULL;
+		switch(m_ImageFlag){
+			default:
+			glRasterPos2f(-halfW,-halfH);
+			break;
+		case IMAGEZOOM:
+			glPixelZoom(0.5,0.5f);
+			glRasterPos2f(-halfW*0.5f,-halfH*0.5f);
+			break;
+		case IMAGEREVERSE:
+			glPixelZoom(-1.0f,-1.0f);	//各轴反向，那么绘制方向也会反向
+			glRasterPos2f(halfW,halfH); //起点改为右上角
+			break;
+		case IMAGERED:
+			glRasterPos2f(-halfW,-halfH);
+			glPixelTransferf(GL_RED_SCALE,1.0f);
+			glPixelTransferf(GL_GREEN_SCALE,0.0f);
+			glPixelTransferf(GL_BLUE_SCALE,0.0f);
+			break;
+		case IMAGEGREEN:
+			glRasterPos2f(-halfW,-halfH);
+			glPixelTransferf(GL_RED_SCALE,0.0f);
+			glPixelTransferf(GL_GREEN_SCALE,1.0f);
+			glPixelTransferf(GL_BLUE_SCALE,0.0f);
+			break;
+		case IMAGEBLUE:
+			glRasterPos2f(-halfW,-halfH);
+			glPixelTransferf(GL_RED_SCALE,0.0f);
+			glPixelTransferf(GL_GREEN_SCALE,0.0f);
+			glPixelTransferf(GL_BLUE_SCALE,1.0f);
+			break;
+		case IMAGEGRAYMAP:
+			glRasterPos2f(-halfW,-halfH);
+			pModefied=(GLubyte *)new GLubyte[m_iWidth*m_iHeight];
+			glDrawPixels(m_iWidth,m_iHeight,GL_RGB,GL_UNSIGNED_BYTE,m_pImage);
+			
+			glPixelTransferf(GL_RED_SCALE,0.3f);
+			glPixelTransferf(GL_GREEN_SCALE,0.59f);
+			glPixelTransferf(GL_BLUE_SCALE,0.11f);
+			glReadPixels(winWidth-m_iWidth/2.0,winHeight-m_iHeight/2.0,m_iWidth,m_iHeight,GL_LUMINANCE,GL_UNSIGNED_BYTE,pModefied);  //读取的起点为像素坐标，坐标原点在屏幕中心
+
+			glPixelTransferf(GL_RED_SCALE,1.0f);
+			glPixelTransferf(GL_GREEN_SCALE,1.0f);
+			glPixelTransferf(GL_BLUE_SCALE,1.0f);
+			break;
+		case IMAGEINVERSE:
+			glRasterPos2f(-halfW,-halfH);
+			GLfloat invert[256];
+			invert[0]=0;
+			int i=1;
+			for(i=1;i<256;i++)
+				invert[i]=1.0-i/255.0;
+			glPixelMapfv(GL_PIXEL_MAP_R_TO_R,255,invert); //红色通道映射
+			glPixelMapfv(GL_PIXEL_MAP_G_TO_G,255,invert);
+			glPixelMapfv(GL_PIXEL_MAP_B_TO_B,255,invert);
+			glPixelTransferi(GL_MAP_COLOR,GL_TRUE);
+			break;
+		}
+
+		if(pModefied)
+		{
+			glDrawPixels(m_iWidth,m_iHeight,GL_LUMINANCE,GL_UNSIGNED_BYTE,pModefied);
+			delete pModefied;
+		}
+		else
+			glDrawPixels(m_iWidth,m_iHeight,GL_RGB,GL_UNSIGNED_BYTE,m_pImage);
+
+		//为不影响以后的绘图操作，再调用图像操作命令恢复现场
+		glPixelZoom(1.0f,1.0f);
+		glPixelTransferi(GL_MAP_COLOR,GL_FALSE);
+		glPixelTransferf(GL_RED_SCALE,1.0f);
+		glPixelTransferf(GL_GREEN_SCALE,1.0f);
+		glPixelTransferf(GL_BLUE_SCALE,1.0f);
+		if(aspect_ratio<1)
+			glRasterPos2f(-Win_Size,-Win_Size/aspect_ratio);
+		else
+			glRasterPos2f(-Win_Size * aspect_ratio,-Win_Size);
+	}		
 }
 
 void CGLTest001View::SetFogMode(){
@@ -1401,13 +1482,28 @@ void CGLTest001View::OnFileOpen()
 		delete m_pImage;
 		m_pImage=m_image->data;
 		m_flag=IMAGE_FILE;			//设置为绘制像素图像
+		m_ImageFlag=GLNULL;
 		InitOperation();
 	}
 	else{
+		m_flag=GLNULL;
+		m_ImageFlag=GLNULL;
 		if(m_pImage){
 			delete m_pImage;
 			m_pImage=NULL;
 			Invalidate();
 		}
 	}
+}
+
+void CGLTest001View::OnImageflag() 
+{
+	// TODO: Add your command handler code here
+	CImageModeDlg dlg;
+	dlg.m_pView=this;
+	if(m_ImageFlag==GLNULL)
+		dlg.m_imageFlag=this->m_ImageFlag;
+	else
+		dlg.m_imageFlag=this->m_ImageFlag-IMAGEZOOM + 1;
+	dlg.DoModal();
 }

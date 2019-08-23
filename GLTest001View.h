@@ -43,7 +43,13 @@
 #define SELECT			21
 #define BITMAP			22
 #define IMAGE_FILE		23
-
+#define IMAGEZOOM		24
+#define IMAGEREVERSE	25
+#define IMAGERED		26
+#define IMAGEGREEN		27
+#define IMAGEBLUE		28
+#define IMAGEGRAYMAP	29
+#define IMAGEINVERSE	30
 
 class CGLTest001View : public CView
 {
@@ -108,6 +114,7 @@ public:
 	//图像
 	GLint m_iWidth,m_iHeight;	//图像宽度和高度
 	GLubyte * m_pImage;			//图像字节数据
+	int m_ImageFlag;			//图像操作标识
 
 // Operations
 public:
@@ -127,6 +134,7 @@ public:
 	void Draw_Stretch();
 	void Draw_Blend();
 	void Draw_Select();
+	void Draw_Image();
 	void SetFogMode();
 	void SetVertexesToGL();
 
@@ -196,6 +204,7 @@ protected:
 	afx_msg void OnSelect();
 	afx_msg void OnBitmap();
 	afx_msg void OnFileOpen();
+	afx_msg void OnImageflag();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

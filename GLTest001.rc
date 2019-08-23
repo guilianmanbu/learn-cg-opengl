@@ -115,6 +115,7 @@ BEGIN
     BUTTON      ID_ANTIALIASING
     BUTTON      ID_SELECT
     BUTTON      ID_BITMAP
+    BUTTON      ID_IMAGEFLAG
 END
 
 
@@ -334,6 +335,31 @@ BEGIN
                     182,53,10
 END
 
+IDD_IMAGEMODEDLG_DIALOG DIALOG DISCARDABLE  0, 0, 320, 161
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "图像绘制模式"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,220,123,93,31
+    PUSHBUTTON      "Cancel",IDCANCEL,263,24,50,14
+    CONTROL         "无",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON | WS_GROUP,
+                    46,31,23,10
+    CONTROL         "缩放",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,46,51,31,
+                    10
+    CONTROL         "翻转",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,46,70,31,
+                    10
+    CONTROL         "红色通道",IDC_RADIO4,"Button",BS_AUTORADIOBUTTON,119,70,
+                    45,10
+    CONTROL         "绿色通道",IDC_RADIO5,"Button",BS_AUTORADIOBUTTON,120,91,
+                    45,10
+    CONTROL         "蓝色通道",IDC_RADIO6,"Button",BS_AUTORADIOBUTTON,120,
+                    111,45,10
+    CONTROL         "灰度图",IDC_RADIO7,"Button",BS_AUTORADIOBUTTON,46,90,38,
+                    10
+    CONTROL         "负图",IDC_RADIO8,"Button",BS_AUTORADIOBUTTON,46,113,31,
+                    10
+END
+
 
 #ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
@@ -443,6 +469,14 @@ BEGIN
         RIGHTMARGIN, 313
         TOPMARGIN, 7
         BOTTOMMARGIN, 290
+    END
+
+    IDD_IMAGEMODEDLG_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 313
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 154
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -607,6 +641,7 @@ BEGIN
     ID_ANTIALIASING         "反走样，抗混淆"
     ID_SELECT               "选取"
     ID_BITMAP               "位图"
+    ID_IMAGEFLAG            "图像操作标识"
 END
 
 #endif    // Chinese (中国) resources

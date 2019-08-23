@@ -9,6 +9,7 @@
 #define IDD_LINEWIDTHDLG_DIALOG         107
 #define IDD_PATTERNDLG_DIALOG           108
 #define IDD_ENVIRONMENTSETDLG_DIALOG    109
+#define IDD_IMAGEMODEDLG_DIALOG         110
 #define IDR_MAINFRAME                   128
 #define IDR_GLTESTTYPE                  129
 #define IDC_CHECK1                      1000
@@ -28,6 +29,9 @@
 #define IDC_CHECK9                      1017
 #define IDC_RADIO4                      1021
 #define IDC_RADIO5                      1022
+#define IDC_RADIO6                      1024
+#define IDC_RADIO7                      1025
+#define IDC_RADIO8                      1026
 #define ID_POLYGON_FILL                 32771
 #define ID_POINT                        32772
 #define ID_LINE                         32773
@@ -62,6 +66,7 @@
 #define ID_ANTIALIASING                 32804
 #define ID_SELECT                       32805
 #define ID_BITMAP                       32806
+#define ID_IMAGEFLAG                    32807
 
 // Next default values for new objects
 // 
@@ -69,8 +74,8 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        130
-#define _APS_NEXT_COMMAND_VALUE         32807
-#define _APS_NEXT_CONTROL_VALUE         1024
-#define _APS_NEXT_SYMED_VALUE           110
+#define _APS_NEXT_COMMAND_VALUE         32808
+#define _APS_NEXT_CONTROL_VALUE         1027
+#define _APS_NEXT_SYMED_VALUE           111
 #endif
 #endif
