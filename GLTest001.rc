@@ -114,6 +114,7 @@ BEGIN
     BUTTON      ID_TRANSPARENT
     BUTTON      ID_ANTIALIASING
     BUTTON      ID_SELECT
+    BUTTON      ID_BITMAP
 END
 
 
@@ -605,6 +606,7 @@ BEGIN
     ID_TRANSPARENT          "透明"
     ID_ANTIALIASING         "反走样，抗混淆"
     ID_SELECT               "选取"
+    ID_BITMAP               "位图"
 END
 
 #endif    // Chinese (中国) resources

@@ -61,6 +61,7 @@
 #define ID_TRANSPARENT                  32803
 #define ID_ANTIALIASING                 32804
 #define ID_SELECT                       32805
+#define ID_BITMAP                       32806
 
 // Next default values for new objects
 // 
@@ -68,7 +69,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        130
-#define _APS_NEXT_COMMAND_VALUE         32806
+#define _APS_NEXT_COMMAND_VALUE         32807
 #define _APS_NEXT_CONTROL_VALUE         1024
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

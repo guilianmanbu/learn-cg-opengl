@@ -24,6 +24,38 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+//斑马位图
+GLubyte Zebra[] = {
+	0x00,0x00,0x00,0x00,
+	0x37,0x20,0x00,0x00,
+	0x13,0x60,0x00,0x00,
+	0x10,0x60,0x00,0x00,
+	0x14,0x60,0x00,0x00,
+	0x06,0x18,0x00,0x00,
+	0x07,0x10,0x00,0x00,
+	0x07,0x40,0x00,0x00,
+	0x03,0x60,0x00,0x00,
+	0x03,0x70,0x00,0x00,
+	0x01,0x70,0x00,0x3e,
+	0x02,0x78,0x00,0x78,
+	0x01,0x18,0x01,0x60,
+	0x01,0x48,0x0a,0x08,
+	0x00,0x62,0x14,0x00,
+	0x00,0xf6,0x43,0xe0,
+	0x00,0x3d,0xcb,0x60,
+	0x00,0x19,0x9d,0x40,
+	0x00,0x08,0x22,0xc0,
+	0x00,0x00,0x09,0x80,
+	0x00,0x02,0x40,0x80,
+	0x00,0x01,0x1b,0x80,
+	0x00,0x00,0x00,0x00,
+	0x00,0x00,0x28,0x00,
+	0x00,0x00,0x29,0x00,
+	0x00,0x00,0x49,0x80,
+	0x00,0x01,0x99,0x80,
+	0x00,0x00,0x00,0x00
+};
+
 /////////////////////////////////////////////////////////////////////////////
 // CGLTest001View
 
@@ -73,6 +105,8 @@ BEGIN_MESSAGE_MAP(CGLTest001View, CView)
 	ON_COMMAND(ID_TRANSPARENT, OnTransparent)
 	ON_COMMAND(ID_ANTIALIASING, OnAntialiasing)
 	ON_COMMAND(ID_SELECT, OnSelect)
+	ON_COMMAND(ID_BITMAP, OnBitmap)
+	ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -114,6 +148,8 @@ CGLTest001View::CGLTest001View()
 	m_BlendFlag=0;
 	//雾效
 	m_FogMode=0;
+	//图像
+	m_pImage=NULL;
 }
 
 CGLTest001View::~CGLTest001View()
@@ -219,7 +255,22 @@ BOOL CGLTest001View::SetupPixelFormat(){
 }
 
 void CGLTest001View::RenderScene(){
-	Draw_line();
+	
+	if(m_pImage){ //绘制图像
+		GLfloat u,v; //投影空间逻辑坐标，与像素坐标通过投影矩阵相互映射
+		if(aspect_ratio<1){	//宽不足则以宽为基准，即宽不变，高缩放
+			u=-m_iWidth/winWidth/2.0*Win_Size;
+			v=-m_iHeight/winWidth/2.0*Win_Size;
+		}
+		else{	//高不足则以高为基准，即高不动，宽缩放
+			u=-m_iWidth/winHeight/2.0*Win_Size;
+			v=-m_iHeight/winHeight/2.0*Win_Size;
+		}
+		glRasterPos2f(u,v);		//屏幕中心
+		glDrawPixels(m_iWidth,m_iHeight,GL_RGB,GL_UNSIGNED_BYTE,m_pImage);
+	}		
+
+	Draw_line();  //水印？哈哈
 	
 	//几何变换. 对 ModelView 矩阵的变换
 	glPushMatrix();  //将当前坐标矩阵压入堆栈
@@ -363,6 +414,25 @@ void CGLTest001View::RenderScene(){
 		case SELECT:
 			setRawVertexes=FALSE;
 			Draw_Select();
+			break;
+		case BITMAP:	//位图
+			//glRasterPos3f(.0,.0,0.0);
+			GLfloat x,y;
+			if(aspect_ratio<1){		
+				x=-Win_Size;
+				y=Win_Size/aspect_ratio-32/winHeight*Win_Size;
+			}else{
+				x=-Win_Size*aspect_ratio;
+				y=Win_Size-32/winHeight*Win_Size;
+			}
+			glRasterPos2f(x,y);  //左上角
+			glBitmap(32,32,0.0,0.0,0.0,0.0,Zebra);
+			setRawVertexes=FALSE;
+			break;
+		case IMAGE_FILE:
+			//if(m_pImage)
+				//glDrawPixels(m_iWidth,m_iHeight,GL_RGB,GL_UNSIGNED_BYTE,m_pImage);
+			setRawVertexes=FALSE;
 			break;
 		default:
 			setRawVertexes=FALSE;
@@ -1306,4 +1376,38 @@ void CGLTest001View::OnSelect()
 	m_flag=SELECT;
 	InitOperation();
 	m_Rflag=0;
+}
+
+void CGLTest001View::OnBitmap() 
+{
+	// TODO: Add your command handler code here
+	m_flag=BITMAP;
+	InitOperation();
+	m_Rflag=0;
+}
+
+void CGLTest001View::OnFileOpen() 
+{
+	// TODO: Add your command handler code here
+	////利用文件对话框打开图像文件
+	CFileDialog hFileDlg(true,NULL,NULL,OFN_FILEMUSTEXIST|OFN_READONLY|OFN_PATHMUSTEXIST,
+		TEXT("bmp 文件(*.bmp)|*.bmp|"),NULL);
+	if(hFileDlg.DoModal()==IDOK){
+		AUX_RGBImageRec * m_image;
+		glPixelStorei(GL_UNPACK_ALIGNMENT,1);		//设置像素存储格式
+		m_image=auxDIBImageLoad(hFileDlg.GetPathName());	//加载图像
+		m_iWidth=m_image->sizeX;	//保存图像数据
+		m_iHeight=m_image->sizeY;
+		delete m_pImage;
+		m_pImage=m_image->data;
+		m_flag=IMAGE_FILE;			//设置为绘制像素图像
+		InitOperation();
+	}
+	else{
+		if(m_pImage){
+			delete m_pImage;
+			m_pImage=NULL;
+			Invalidate();
+		}
+	}
 }

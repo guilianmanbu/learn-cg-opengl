@@ -15,20 +15,20 @@ Class3=CGLTest001View
 Class4=CMainFrame
 
 ResourceCount=8
-Resource1=IDR_MAINFRAME
-Resource2=IDD_POLYGONFILLDLG_DIALOG
+Resource1=IDD_POINTSIZEDLG_DIALOG
+Resource2=IDD_PATTERNDLG_DIALOG
 Class5=CAboutDlg
 Class6=PolygonFillDlg
 Class7=CoordSetDlg
-Resource3=IDD_PATTERNDLG_DIALOG
+Resource3=IDD_COORDSETDLG_DIALOG
 Class8=CCoordSetDlg
-Resource4=IDD_COORDSETDLG_DIALOG
+Resource4=IDR_MAINFRAME
 Class9=CPointSizeDlg
-Resource5=IDD_LINEWIDTHDLG_DIALOG
+Resource5=IDD_POLYGONFILLDLG_DIALOG
 Class10=CLineWidthDlg
-Resource6=IDD_POINTSIZEDLG_DIALOG
+Resource6=IDD_ABOUTBOX
 Class11=CPatternDlg
-Resource7=IDD_ABOUTBOX
+Resource7=IDD_LINEWIDTHDLG_DIALOG
 Class12=CEnvironmentSetDlg
 Resource8=IDD_ENVIRONMENTSETDLG_DIALOG
 
@@ -51,7 +51,7 @@ ImplementationFile=GLTest001View.cpp
 Filter=C
 BaseClass=CView
 VirtualFilter=VWC
-LastObject=ID_STRETCH
+LastObject=ID_FILE_OPEN
 
 
 [CLS:CMainFrame]
@@ -61,7 +61,7 @@ ImplementationFile=MainFrm.cpp
 Filter=T
 BaseClass=CFrameWnd
 VirtualFilter=fWC
-LastObject=ID_SELECT
+LastObject=ID_BITMAP
 
 
 
@@ -172,7 +172,8 @@ Command23=ID_BLEND
 Command24=ID_TRANSPARENT
 Command25=ID_ANTIALIASING
 Command26=ID_SELECT
-CommandCount=26
+Command27=ID_BITMAP
+CommandCount=27
 
 [DLG:IDD_POLYGONFILLDLG_DIALOG]
 Type=1

@@ -41,6 +41,8 @@
 #define TEAPOT			19
 #define STRETCH			20
 #define SELECT			21
+#define BITMAP			22
+#define IMAGE_FILE		23
 
 
 class CGLTest001View : public CView
@@ -102,6 +104,10 @@ public:
 
 	//雾效
 	int m_FogMode;
+
+	//图像
+	GLint m_iWidth,m_iHeight;	//图像宽度和高度
+	GLubyte * m_pImage;			//图像字节数据
 
 // Operations
 public:
@@ -188,6 +194,8 @@ protected:
 	afx_msg void OnTransparent();
 	afx_msg void OnAntialiasing();
 	afx_msg void OnSelect();
+	afx_msg void OnBitmap();
+	afx_msg void OnFileOpen();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
