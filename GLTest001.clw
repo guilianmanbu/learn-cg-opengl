@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CImageModeDlg
+LastClass=CGLTest001View
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "GLTest001.h"
@@ -15,22 +15,22 @@ Class3=CGLTest001View
 Class4=CMainFrame
 
 ResourceCount=9
-Resource1=IDR_MAINFRAME
-Resource2=IDD_POLYGONFILLDLG_DIALOG
+Resource1=IDD_PATTERNDLG_DIALOG
+Resource2=IDR_MAINFRAME
 Class5=CAboutDlg
 Class6=PolygonFillDlg
 Class7=CoordSetDlg
-Resource3=IDD_PATTERNDLG_DIALOG
+Resource3=IDD_POINTSIZEDLG_DIALOG
 Class8=CCoordSetDlg
-Resource4=IDD_COORDSETDLG_DIALOG
+Resource4=IDD_ABOUTBOX
 Class9=CPointSizeDlg
-Resource5=IDD_LINEWIDTHDLG_DIALOG
+Resource5=IDD_COORDSETDLG_DIALOG
 Class10=CLineWidthDlg
-Resource6=IDD_POINTSIZEDLG_DIALOG
+Resource6=IDD_POLYGONFILLDLG_DIALOG
 Class11=CPatternDlg
-Resource7=IDD_ABOUTBOX
+Resource7=IDD_ENVIRONMENTSETDLG_DIALOG
 Class12=CEnvironmentSetDlg
-Resource8=IDD_ENVIRONMENTSETDLG_DIALOG
+Resource8=IDD_LINEWIDTHDLG_DIALOG
 Class13=CImageModeDlg
 Resource9=IDD_IMAGEMODEDLG_DIALOG
 
@@ -53,7 +53,7 @@ ImplementationFile=GLTest001View.cpp
 Filter=C
 BaseClass=CView
 VirtualFilter=VWC
-LastObject=ID_FILE_OPEN
+LastObject=ID_IMAGE_MAP_2D
 
 
 [CLS:CMainFrame]
@@ -63,7 +63,7 @@ ImplementationFile=MainFrm.cpp
 Filter=T
 BaseClass=CFrameWnd
 VirtualFilter=fWC
-LastObject=ID_IMAGEFLAG
+LastObject=CMainFrame
 
 
 
@@ -176,7 +176,8 @@ Command25=ID_ANTIALIASING
 Command26=ID_SELECT
 Command27=ID_BITMAP
 Command28=ID_IMAGEFLAG
-CommandCount=28
+Command29=ID_IMAGE_MAP_2D
+CommandCount=29
 
 [DLG:IDD_POLYGONFILLDLG_DIALOG]
 Type=1

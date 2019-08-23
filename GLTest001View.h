@@ -50,6 +50,7 @@
 #define IMAGEBLUE		28
 #define IMAGEGRAYMAP	29
 #define IMAGEINVERSE	30
+#define TEXTURE_MAP_2D	31
 
 class CGLTest001View : public CView
 {
@@ -114,6 +115,7 @@ public:
 	//图像
 	GLint m_iWidth,m_iHeight;	//图像宽度和高度
 	GLubyte * m_pImage;			//图像字节数据
+	GLubyte * m_pImageModefied;	//缓存由图像绘制得到的灰度图
 	int m_ImageFlag;			//图像操作标识
 
 // Operations
@@ -125,6 +127,7 @@ public:
 	void InitOperation();			//绘图操作初始化设置
 	void RealEnvironmentSet();		//真实感设置函数
 	void DoSelection(GLfloat xPos,GLfloat yPos);	//选取
+	BOOL OpenBmpImageFile();
 
 // Draw graphic
 public:
@@ -205,6 +208,7 @@ protected:
 	afx_msg void OnBitmap();
 	afx_msg void OnFileOpen();
 	afx_msg void OnImageflag();
+	afx_msg void OnImageMap2d();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

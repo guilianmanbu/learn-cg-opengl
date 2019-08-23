@@ -116,6 +116,7 @@ BEGIN
     BUTTON      ID_SELECT
     BUTTON      ID_BITMAP
     BUTTON      ID_IMAGEFLAG
+    BUTTON      ID_IMAGE_MAP_2D
 END
 
 
@@ -642,6 +643,7 @@ BEGIN
     ID_SELECT               "选取"
     ID_BITMAP               "位图"
     ID_IMAGEFLAG            "图像操作标识"
+    ID_IMAGE_MAP_2D         "纹理映射"
 END
 
 #endif    // Chinese (中国) resources

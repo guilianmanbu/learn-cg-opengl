@@ -109,6 +109,7 @@ BEGIN_MESSAGE_MAP(CGLTest001View, CView)
 	ON_COMMAND(ID_BITMAP, OnBitmap)
 	ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
 	ON_COMMAND(ID_IMAGEFLAG, OnImageflag)
+	ON_COMMAND(ID_IMAGE_MAP_2D, OnImageMap2d)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -152,11 +153,14 @@ CGLTest001View::CGLTest001View()
 	m_FogMode=0;
 	//图像
 	m_pImage=NULL;
+	m_pImageModefied=NULL;
 	m_ImageFlag=GLNULL;
 }
 
 CGLTest001View::~CGLTest001View()
 {
+	if(m_pImageModefied!=NULL)
+		delete m_pImageModefied;
 }
 
 BOOL CGLTest001View::PreCreateWindow(CREATESTRUCT& cs)
@@ -421,6 +425,21 @@ void CGLTest001View::RenderScene(){
 		case IMAGE_FILE:
 			//if(m_pImage)
 				//glDrawPixels(m_iWidth,m_iHeight,GL_RGB,GL_UNSIGNED_BYTE,m_pImage);
+			setRawVertexes=FALSE;
+			break;
+		case TEXTURE_MAP_2D:
+			glEnable(GL_TEXTURE_2D);
+			glBegin(GL_QUADS);
+				glTexCoord2f(0.0f,0.0f);
+				glVertex3f(-Win_Size/3.0,-Win_Size/3.0,0.0);
+				glTexCoord2f(1.0f,0.0f);
+				glVertex3f(Win_Size/3.0,-Win_Size/3.0,0.0);
+				glTexCoord2f(1.0f,1.0f);
+				glVertex3f(Win_Size/3.0,Win_Size/3.0,0.0);
+				glTexCoord2f(0.0f,1.0f);
+				glVertex3f(-Win_Size/3.0,Win_Size/3.0,0.0);
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
 			setRawVertexes=FALSE;
 			break;
 		default:
@@ -820,7 +839,6 @@ void CGLTest001View::Draw_Image(){
 			halfH=m_iHeight/winHeight/2.0*Win_Size;
 		}
 		
-		GLubyte * pModefied=NULL;
 		switch(m_ImageFlag){
 			default:
 			glRasterPos2f(-halfW,-halfH);
@@ -853,17 +871,20 @@ void CGLTest001View::Draw_Image(){
 			break;
 		case IMAGEGRAYMAP:
 			glRasterPos2f(-halfW,-halfH);
-			pModefied=(GLubyte *)new GLubyte[m_iWidth*m_iHeight];
-			glDrawPixels(m_iWidth,m_iHeight,GL_RGB,GL_UNSIGNED_BYTE,m_pImage);
-			
-			glPixelTransferf(GL_RED_SCALE,0.3f);
-			glPixelTransferf(GL_GREEN_SCALE,0.59f);
-			glPixelTransferf(GL_BLUE_SCALE,0.11f);
-			glReadPixels(winWidth-m_iWidth/2.0,winHeight-m_iHeight/2.0,m_iWidth,m_iHeight,GL_LUMINANCE,GL_UNSIGNED_BYTE,pModefied);  //读取的起点为像素坐标，坐标原点在屏幕中心
+			if(m_pImageModefied==NULL){
+				m_pImageModefied=(GLubyte *)new GLubyte[m_iWidth*m_iHeight];
+				glDrawPixels(m_iWidth,m_iHeight,GL_RGB,GL_UNSIGNED_BYTE,m_pImage);
+				
+				glPixelTransferf(GL_RED_SCALE,0.3f);
+				glPixelTransferf(GL_GREEN_SCALE,0.59f);
+				glPixelTransferf(GL_BLUE_SCALE,0.11f);
+				//读取的起点为像素坐标，坐标原点在屏幕中心
+				glReadPixels(winWidth-m_iWidth/2.0,winHeight-m_iHeight/2.0,m_iWidth,m_iHeight,GL_LUMINANCE,GL_UNSIGNED_BYTE,m_pImageModefied);  
 
-			glPixelTransferf(GL_RED_SCALE,1.0f);
-			glPixelTransferf(GL_GREEN_SCALE,1.0f);
-			glPixelTransferf(GL_BLUE_SCALE,1.0f);
+				glPixelTransferf(GL_RED_SCALE,1.0f);
+				glPixelTransferf(GL_GREEN_SCALE,1.0f);
+				glPixelTransferf(GL_BLUE_SCALE,1.0f);
+			}
 			break;
 		case IMAGEINVERSE:
 			glRasterPos2f(-halfW,-halfH);
@@ -879,10 +900,9 @@ void CGLTest001View::Draw_Image(){
 			break;
 		}
 
-		if(pModefied)
+		if(m_ImageFlag==IMAGEGRAYMAP)
 		{
-			glDrawPixels(m_iWidth,m_iHeight,GL_LUMINANCE,GL_UNSIGNED_BYTE,pModefied);
-			delete pModefied;
+			glDrawPixels(m_iWidth,m_iHeight,GL_LUMINANCE,GL_UNSIGNED_BYTE,m_pImageModefied);
 		}
 		else
 			glDrawPixels(m_iWidth,m_iHeight,GL_RGB,GL_UNSIGNED_BYTE,m_pImage);
@@ -1467,20 +1487,43 @@ void CGLTest001View::OnBitmap()
 	m_Rflag=0;
 }
 
-void CGLTest001View::OnFileOpen() 
-{
-	// TODO: Add your command handler code here
+BOOL CGLTest001View::OpenBmpImageFile(){
 	////利用文件对话框打开图像文件
 	CFileDialog hFileDlg(true,NULL,NULL,OFN_FILEMUSTEXIST|OFN_READONLY|OFN_PATHMUSTEXIST,
 		TEXT("bmp 文件(*.bmp)|*.bmp|"),NULL);
-	if(hFileDlg.DoModal()==IDOK){
+	int action = hFileDlg.DoModal();
+	if(action ==IDOK){
+		delete m_pImage;
+		delete m_pImageModefied;
+		m_pImageModefied=NULL;
 		AUX_RGBImageRec * m_image;
 		glPixelStorei(GL_UNPACK_ALIGNMENT,1);		//设置像素存储格式
 		m_image=auxDIBImageLoad(hFileDlg.GetPathName());	//加载图像
 		m_iWidth=m_image->sizeX;	//保存图像数据
 		m_iHeight=m_image->sizeY;
-		delete m_pImage;
 		m_pImage=m_image->data;
+		return TRUE;
+	}
+	else if(action == IDCANCEL){
+		if(m_pImage){
+			delete m_pImage;
+			m_pImage=NULL;
+			Invalidate();
+		}
+		if(m_pImageModefied){
+			delete m_pImageModefied;
+			m_pImageModefied=NULL;
+		}
+		return FALSE;
+	}
+	return FALSE;
+}
+
+void CGLTest001View::OnFileOpen() 
+{
+	// TODO: Add your command handler code here
+	////利用文件对话框打开图像文件
+	if(this->OpenBmpImageFile()){
 		m_flag=IMAGE_FILE;			//设置为绘制像素图像
 		m_ImageFlag=GLNULL;
 		InitOperation();
@@ -1488,11 +1531,6 @@ void CGLTest001View::OnFileOpen()
 	else{
 		m_flag=GLNULL;
 		m_ImageFlag=GLNULL;
-		if(m_pImage){
-			delete m_pImage;
-			m_pImage=NULL;
-			Invalidate();
-		}
 	}
 }
 
@@ -1506,4 +1544,23 @@ void CGLTest001View::OnImageflag()
 	else
 		dlg.m_imageFlag=this->m_ImageFlag-IMAGEZOOM + 1;
 	dlg.DoModal();
+}
+
+void CGLTest001View::OnImageMap2d() 
+{
+	// TODO: Add your command handler code here
+	////加载图像文件
+	if(this->OpenBmpImageFile()){
+		////加载纹理图像，传递给GL或GPU
+		glTexImage2D(GL_TEXTURE_2D,0,3,m_iWidth,m_iHeight,0,GL_RGB,GL_UNSIGNED_BYTE,m_pImage);
+		////设置纹理参数和环境参数
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+		glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_DECAL);
+
+		m_flag=TEXTURE_MAP_2D;
+		InitOperation();
+	}
 }
