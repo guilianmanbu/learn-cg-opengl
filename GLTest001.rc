@@ -117,6 +117,7 @@ BEGIN
     BUTTON      ID_BITMAP
     BUTTON      ID_IMAGEFLAG
     BUTTON      ID_IMAGE_MAP_2D
+    BUTTON      ID_TEXTRUE_MAP_OBJECT
 END
 
 
@@ -644,6 +645,7 @@ BEGIN
     ID_BITMAP               "位图"
     ID_IMAGEFLAG            "图像操作标识"
     ID_IMAGE_MAP_2D         "纹理映射"
+    ID_TEXTRUE_MAP_OBJECT   "多纹理对象"
 END
 
 #endif    // Chinese (中国) resources

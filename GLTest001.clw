@@ -15,22 +15,22 @@ Class3=CGLTest001View
 Class4=CMainFrame
 
 ResourceCount=9
-Resource1=IDD_PATTERNDLG_DIALOG
-Resource2=IDR_MAINFRAME
+Resource1=IDD_LINEWIDTHDLG_DIALOG
+Resource2=IDD_ENVIRONMENTSETDLG_DIALOG
 Class5=CAboutDlg
 Class6=PolygonFillDlg
 Class7=CoordSetDlg
-Resource3=IDD_POINTSIZEDLG_DIALOG
+Resource3=IDD_COORDSETDLG_DIALOG
 Class8=CCoordSetDlg
-Resource4=IDD_ABOUTBOX
+Resource4=IDR_MAINFRAME
 Class9=CPointSizeDlg
-Resource5=IDD_COORDSETDLG_DIALOG
+Resource5=IDD_POLYGONFILLDLG_DIALOG
 Class10=CLineWidthDlg
-Resource6=IDD_POLYGONFILLDLG_DIALOG
+Resource6=IDD_ABOUTBOX
 Class11=CPatternDlg
-Resource7=IDD_ENVIRONMENTSETDLG_DIALOG
+Resource7=IDD_PATTERNDLG_DIALOG
 Class12=CEnvironmentSetDlg
-Resource8=IDD_LINEWIDTHDLG_DIALOG
+Resource8=IDD_POINTSIZEDLG_DIALOG
 Class13=CImageModeDlg
 Resource9=IDD_IMAGEMODEDLG_DIALOG
 
@@ -53,7 +53,7 @@ ImplementationFile=GLTest001View.cpp
 Filter=C
 BaseClass=CView
 VirtualFilter=VWC
-LastObject=ID_IMAGE_MAP_2D
+LastObject=ID_TEXTRUE_MAP_OBJECT
 
 
 [CLS:CMainFrame]
@@ -63,7 +63,7 @@ ImplementationFile=MainFrm.cpp
 Filter=T
 BaseClass=CFrameWnd
 VirtualFilter=fWC
-LastObject=CMainFrame
+LastObject=ID_TEXTRUE_MAP_OBJECT
 
 
 
@@ -177,7 +177,8 @@ Command26=ID_SELECT
 Command27=ID_BITMAP
 Command28=ID_IMAGEFLAG
 Command29=ID_IMAGE_MAP_2D
-CommandCount=29
+Command30=ID_TEXTRUE_MAP_OBJECT
+CommandCount=30
 
 [DLG:IDD_POLYGONFILLDLG_DIALOG]
 Type=1

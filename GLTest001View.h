@@ -51,6 +51,7 @@
 #define IMAGEGRAYMAP	29
 #define IMAGEINVERSE	30
 #define TEXTURE_MAP_2D	31
+#define IMAGE_MAP_OBJECT	32
 
 class CGLTest001View : public CView
 {
@@ -117,6 +118,8 @@ public:
 	GLubyte * m_pImage;			//图像字节数据
 	GLubyte * m_pImageModefied;	//缓存由图像绘制得到的灰度图
 	int m_ImageFlag;			//图像操作标识
+	//多纹理对象
+	GLuint m_imageIDs[3];		//纹理对象的数组
 
 // Operations
 public:
@@ -138,6 +141,7 @@ public:
 	void Draw_Blend();
 	void Draw_Select();
 	void Draw_Image();
+	void Draw_ImageMapObject();
 	void SetFogMode();
 	void SetVertexesToGL();
 
@@ -209,6 +213,7 @@ protected:
 	afx_msg void OnFileOpen();
 	afx_msg void OnImageflag();
 	afx_msg void OnImageMap2d();
+	afx_msg void OnTextrueMapObject();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

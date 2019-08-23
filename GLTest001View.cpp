@@ -110,6 +110,7 @@ BEGIN_MESSAGE_MAP(CGLTest001View, CView)
 	ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
 	ON_COMMAND(ID_IMAGEFLAG, OnImageflag)
 	ON_COMMAND(ID_IMAGE_MAP_2D, OnImageMap2d)
+	ON_COMMAND(ID_TEXTRUE_MAP_OBJECT, OnTextrueMapObject)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -440,6 +441,10 @@ void CGLTest001View::RenderScene(){
 				glVertex3f(-Win_Size/3.0,Win_Size/3.0,0.0);
 			glEnd();
 			glDisable(GL_TEXTURE_2D);
+			setRawVertexes=FALSE;
+			break;
+		case IMAGE_MAP_OBJECT:
+			Draw_ImageMapObject();
 			setRawVertexes=FALSE;
 			break;
 		default:
@@ -918,6 +923,91 @@ void CGLTest001View::Draw_Image(){
 		else
 			glRasterPos2f(-Win_Size * aspect_ratio,-Win_Size);
 	}		
+}
+
+void CGLTest001View::Draw_ImageMapObject(){
+	if(m_flag!=IMAGE_MAP_OBJECT)
+		return;
+	GLfloat sizeScale=0.5f;
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D,m_imageIDs[0]);   //
+	glBegin(GL_QUADS);
+		glNormal3f(0.0,0.0,1.0);
+		glTexCoord2f(0.0f,0.0f);
+		glVertex3f(-Win_Size*sizeScale,-Win_Size*sizeScale,Win_Size*sizeScale);
+		glTexCoord2f(1.0,0.0);
+		glVertex3f(Win_Size*sizeScale,-Win_Size*sizeScale,Win_Size*sizeScale);
+		glTexCoord2f(1.0,1.0);
+		glVertex3f(Win_Size*sizeScale,Win_Size*sizeScale,Win_Size*sizeScale);
+		glTexCoord2f(0.0,1.0);
+		glVertex3f(-Win_Size*sizeScale,Win_Size*sizeScale,Win_Size*sizeScale);
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D,m_imageIDs[0]);   //
+	glBegin(GL_QUADS);
+		glNormal3f(0.0,0.0,-1.0);
+		glTexCoord2f(0.0f,0.0f);
+		glVertex3f(-Win_Size*sizeScale,-Win_Size*sizeScale,-Win_Size*sizeScale);
+		glTexCoord2f(0.0,1.0);
+		glVertex3f(-Win_Size*sizeScale,Win_Size*sizeScale,-Win_Size*sizeScale);
+		glTexCoord2f(1.0,1.0);
+		glVertex3f(Win_Size*sizeScale,Win_Size*sizeScale,-Win_Size*sizeScale);
+		glTexCoord2f(1.0,0.0);
+		glVertex3f(Win_Size*sizeScale,-Win_Size*sizeScale,-Win_Size*sizeScale);
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D,m_imageIDs[1]);   //
+	glBegin(GL_QUADS);
+		glNormal3f(1.0,0.0,0.0);
+		glTexCoord2f(0.0f,0.0f);
+		glVertex3f(Win_Size*sizeScale,-Win_Size*sizeScale,-Win_Size*sizeScale);
+		glTexCoord2f(0.0,1.0);
+		glVertex3f(Win_Size*sizeScale,Win_Size*sizeScale,-Win_Size*sizeScale);
+		glTexCoord2f(1.0,1.0);
+		glVertex3f(Win_Size*sizeScale,Win_Size*sizeScale,Win_Size*sizeScale);
+		glTexCoord2f(1.0,0.0);
+		glVertex3f(Win_Size*sizeScale,-Win_Size*sizeScale,Win_Size*sizeScale);
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D,m_imageIDs[1]);   //
+	glBegin(GL_QUADS);
+		glNormal3f(-1.0,0.0,0.0);
+		glTexCoord2f(0.0f,0.0f);
+		glVertex3f(-Win_Size*sizeScale,-Win_Size*sizeScale,-Win_Size*sizeScale);
+		glTexCoord2f(1.0,0.0);
+		glVertex3f(-Win_Size*sizeScale,-Win_Size*sizeScale,Win_Size*sizeScale);
+		glTexCoord2f(1.0,1.0);
+		glVertex3f(-Win_Size*sizeScale,Win_Size*sizeScale,Win_Size*sizeScale);
+		glTexCoord2f(0.0,1.0);
+		glVertex3f(-Win_Size*sizeScale,Win_Size*sizeScale,-Win_Size*sizeScale);
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D,m_imageIDs[2]);   //
+	glBegin(GL_QUADS);
+		glNormal3f(0.0,1.0,0.0);
+		glTexCoord2f(0.0f,0.0f);
+		glVertex3f(-Win_Size*sizeScale,Win_Size*sizeScale,-Win_Size*sizeScale);
+		glTexCoord2f(1.0,0.0);
+		glVertex3f(-Win_Size*sizeScale,Win_Size*sizeScale,Win_Size*sizeScale);
+		glTexCoord2f(1.0,1.0);
+		glVertex3f(Win_Size*sizeScale,Win_Size*sizeScale,Win_Size*sizeScale);
+		glTexCoord2f(0.0,1.0);
+		glVertex3f(Win_Size*sizeScale,Win_Size*sizeScale,-Win_Size*sizeScale);
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D,m_imageIDs[2]);   //
+	glBegin(GL_QUADS);
+		glNormal3f(0.0,-1.0,0.0);
+		glTexCoord2f(0.0f,0.0f);
+		glVertex3f(-Win_Size*sizeScale,-Win_Size*sizeScale,-Win_Size*sizeScale);
+		glTexCoord2f(1.0,0.0);
+		glVertex3f(Win_Size*sizeScale,-Win_Size*sizeScale,-Win_Size*sizeScale);
+		glTexCoord2f(1.0,1.0);
+		glVertex3f(Win_Size*sizeScale,-Win_Size*sizeScale,Win_Size*sizeScale);
+		glTexCoord2f(0.0,1.0);
+		glVertex3f(-Win_Size*sizeScale,-Win_Size*sizeScale,Win_Size*sizeScale);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
 }
 
 void CGLTest001View::SetFogMode(){
@@ -1493,9 +1583,14 @@ BOOL CGLTest001View::OpenBmpImageFile(){
 		TEXT("bmp 文件(*.bmp)|*.bmp|"),NULL);
 	int action = hFileDlg.DoModal();
 	if(action ==IDOK){
-		delete m_pImage;
-		delete m_pImageModefied;
-		m_pImageModefied=NULL;
+		if(m_pImage){
+			delete m_pImage;
+			m_pImage=NULL;
+		}
+		if(m_pImageModefied){
+			delete m_pImageModefied;
+			m_pImageModefied=NULL;
+		}
 		AUX_RGBImageRec * m_image;
 		glPixelStorei(GL_UNPACK_ALIGNMENT,1);		//设置像素存储格式
 		m_image=auxDIBImageLoad(hFileDlg.GetPathName());	//加载图像
@@ -1563,4 +1658,29 @@ void CGLTest001View::OnImageMap2d()
 		m_flag=TEXTURE_MAP_2D;
 		InitOperation();
 	}
+}
+
+//多纹理对象
+void CGLTest001View::OnTextrueMapObject() 
+{
+	// TODO: Add your command handler code here
+	glGenTextures(3,m_imageIDs);	//
+	for(int i=0;i<3;i++){
+		if(this->OpenBmpImageFile()){
+			glBindTexture(GL_TEXTURE_2D,m_imageIDs[i]);
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+			glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
+			glTexImage2D(GL_TEXTURE_2D,0,3,m_iWidth,m_iHeight,0,GL_RGB,GL_UNSIGNED_BYTE,m_pImage);
+		}
+		else{
+			CString str;
+			str.Format("",i+1);
+			i--;
+		}
+	}
+	m_flag=IMAGE_MAP_OBJECT;
+	InitOperation();
 }
