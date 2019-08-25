@@ -12,6 +12,7 @@
 #define IDD_IMAGEMODEDLG_DIALOG         110
 #define IDR_MAINFRAME                   128
 #define IDR_GLTESTTYPE                  129
+#define IDI_ICON1                       130
 #define IDC_CHECK1                      1000
 #define IDC_EDIT1                       1001
 #define IDC_EDIT2                       1002
@@ -69,14 +70,24 @@
 #define ID_IMAGEFLAG                    32807
 #define ID_IMAGE_MAP_2D                 32808
 #define ID_TEXTRUE_MAP_OBJECT           32809
+#define ID_ImageMapBlend                32810
+#define ID_TEXTURE_1D                   32811
+#define ID_TEXTURE_SPHERE               32812
+#define ID_QUADRICOBJ                   32813
+#define ID_BEZIERLINE                   32814
+#define ID_BEZIERSURF                   32815
+#define ID_NURBSLINE                    32816
+#define ID_NURBSSURF                    32817
+#define ID_NURBSTRIM                    32818
+#define ID_NURBSTEXTUREMAP              32819
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        130
-#define _APS_NEXT_COMMAND_VALUE         32810
+#define _APS_NEXT_RESOURCE_VALUE        131
+#define _APS_NEXT_COMMAND_VALUE         32820
 #define _APS_NEXT_CONTROL_VALUE         1027
 #define _APS_NEXT_SYMED_VALUE           111
 #endif

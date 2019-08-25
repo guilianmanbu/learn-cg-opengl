@@ -68,6 +68,7 @@ END
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON    DISCARDABLE     "res\\GLTest001.ico"
 IDR_GLTESTTYPE          ICON    DISCARDABLE     "res\\GLTest001Doc.ico"
+IDI_ICON1               ICON    DISCARDABLE     "res\\icon1.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -118,6 +119,16 @@ BEGIN
     BUTTON      ID_IMAGEFLAG
     BUTTON      ID_IMAGE_MAP_2D
     BUTTON      ID_TEXTRUE_MAP_OBJECT
+    BUTTON      ID_ImageMapBlend
+    BUTTON      ID_TEXTURE_1D
+    BUTTON      ID_TEXTURE_SPHERE
+    BUTTON      ID_QUADRICOBJ
+    BUTTON      ID_BEZIERLINE
+    BUTTON      ID_BEZIERSURF
+    BUTTON      ID_NURBSLINE
+    BUTTON      ID_NURBSSURF
+    BUTTON      ID_NURBSTRIM
+    BUTTON      ID_NURBSTEXTUREMAP
 END
 
 
@@ -646,6 +657,20 @@ BEGIN
     ID_IMAGEFLAG            "图像操作标识"
     ID_IMAGE_MAP_2D         "纹理映射"
     ID_TEXTRUE_MAP_OBJECT   "多纹理对象"
+    ID_ImageMapBlend        "纹理透明"
+    ID_TEXTURE_1D           "一维纹理"
+    ID_TEXTURE_SPHERE       "球体纹理对象"
+    ID_QUADRICOBJ           "二次曲面对象"
+    ID_BEZIERLINE           "贝塞尔曲线"
+    ID_BEZIERSURF           "Bezier 曲面"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_NURBSLINE            "NURB样条曲线"
+    ID_NURBSSURF            "NURB样条曲面"
+    ID_NURBSTRIM            "NURB样条曲面裁剪"
+    ID_NURBSTEXTUREMAP      "曲面纹理映射"
 END
 
 #endif    // Chinese (中国) resources

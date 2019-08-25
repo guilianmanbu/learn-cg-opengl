@@ -111,6 +111,16 @@ BEGIN_MESSAGE_MAP(CGLTest001View, CView)
 	ON_COMMAND(ID_IMAGEFLAG, OnImageflag)
 	ON_COMMAND(ID_IMAGE_MAP_2D, OnImageMap2d)
 	ON_COMMAND(ID_TEXTRUE_MAP_OBJECT, OnTextrueMapObject)
+	ON_COMMAND(ID_ImageMapBlend, OnImageMapBlend)
+	ON_COMMAND(ID_TEXTURE_1D, OnTexture1d)
+	ON_COMMAND(ID_TEXTURE_SPHERE, OnTextureSphere)
+	ON_COMMAND(ID_QUADRICOBJ, OnQuadricobj)
+	ON_COMMAND(ID_BEZIERLINE, OnBezierline)
+	ON_COMMAND(ID_BEZIERSURF, OnBeziersurf)
+	ON_COMMAND(ID_NURBSLINE, OnNurbsline)
+	ON_COMMAND(ID_NURBSSURF, OnNurbssurf)
+	ON_COMMAND(ID_NURBSTRIM, OnNurbstrim)
+	ON_COMMAND(ID_NURBSTEXTUREMAP, OnNurbstexturemap)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -156,6 +166,8 @@ CGLTest001View::CGLTest001View()
 	m_pImage=NULL;
 	m_pImageModefied=NULL;
 	m_ImageFlag=GLNULL;
+	//NURB样条曲面  裁剪标志
+	m_NurbsTrimFlag=0;
 }
 
 CGLTest001View::~CGLTest001View()
@@ -263,8 +275,9 @@ BOOL CGLTest001View::SetupPixelFormat(){
 }
 
 void CGLTest001View::RenderScene(){
-	Draw_Image();
+	//Draw_Image();
 	Draw_line();  //水印？哈哈
+	Draw_TextureSphereBG();
 	
 	//几何变换. 对 ModelView 矩阵的变换
 	glPushMatrix();  //将当前坐标矩阵压入堆栈
@@ -424,6 +437,7 @@ void CGLTest001View::RenderScene(){
 			setRawVertexes=FALSE;
 			break;
 		case IMAGE_FILE:
+			Draw_Image();
 			//if(m_pImage)
 				//glDrawPixels(m_iWidth,m_iHeight,GL_RGB,GL_UNSIGNED_BYTE,m_pImage);
 			setRawVertexes=FALSE;
@@ -447,6 +461,103 @@ void CGLTest001View::RenderScene(){
 			Draw_ImageMapObject();
 			setRawVertexes=FALSE;
 			break;
+		case TEXTURE_MAP_1D:
+			glBindTexture(GL_TEXTURE_1D,m_texture1D);
+			glBegin(GL_QUADS);
+				glNormal3f(0.0,0.0,1.0);
+				glVertex3f(-Win_Size/6.0,-Win_Size/6.0,0.0);
+				glVertex3f(Win_Size/6.0,-Win_Size/6.0,0.0);
+				glVertex3f(Win_Size/6.0,Win_Size/6.0,0.0);
+				glVertex3f(-Win_Size/6.0,Win_Size/6.0,0.0);
+			glEnd();
+			setRawVertexes=FALSE;
+			break;
+		case TEXTURE_SPHERE:
+			glEnable(GL_TEXTURE_GEN_S);		//启用纹理坐标生成
+			glEnable(GL_TEXTURE_GEN_T);		//启用纹理坐标生成
+			glDepthMask(GL_TRUE);
+			glBindTexture(GL_TEXTURE_2D,m_ImageSphere[1]);
+			glutSolidTorus(Win_Size/8.0,Win_Size/4.0,30,30);
+			setRawVertexes=FALSE;
+			break;
+		case QUADRICOBJ:
+			Draw_QuadricObj();
+			setRawVertexes=FALSE;
+			break;
+		case BEZIERLINE:
+			if(m_Point_Array.GetSize()>1){
+				int pt_num=m_Point_Array.GetSize();
+				if(pt_num>1){
+					glEnable(GL_MAP1_VERTEX_3);		//启用求值器
+					GLPoint pt;
+					GLfloat (* quad)[3];
+					quad = new GLfloat[pt_num*2][3];
+					for(int i=0;i<pt_num;i++){
+						pt=m_Point_Array[i];
+						pt.z=0.0;
+						quad[i][0]=pt.x;
+						quad[i][1]=pt.y;
+						quad[i][2]=pt.z;
+					}
+					
+					////调用求值器
+					glMap1f(GL_MAP1_VERTEX_3,0.0,1.0,3,2,&quad[0][0]);
+					glMapGrid1f(50,0,1);		//创建一维网格
+					glEvalMesh1(GL_LINE,0,50);		//绘制一维网格，即 Bezier 曲线
+					/*glBegin(GL_LINE_STRIP);
+					for(i=0;i<50;i++)
+						glEvalCoord1f((float)i/50.0);
+					glEnd();*/
+					delete []quad;
+				}
+				//glEnable(GL_MAP1_VERTEX_3);		//启用求值器
+				//glMapGrid1d(100,0.0,1.0);		//创建一维网格
+				//glEvalMesh1(GL_LINE,0,100);		//绘制一维网格，即 Bezier 曲线
+				/*MessageBox("bezier curve");
+				glBegin(GL_LINE_STRIP);
+					//for(int i=0;i<100;i++)
+						//glEvalCoord1f((float)i/100.0);
+				for(int i=0;i<m_Point_Array.GetSize();i++){
+					glVertex3f(m_Point_Array[i].x,m_Point_Array[i].y,0.0f);
+				}*/
+			}
+			setRawVertexes=FALSE;
+			break;
+		case BEZIERSURF:
+			if(m_Point_Array.GetSize()>1){
+				int pt_num=m_Point_Array.GetSize();
+				glEnable(GL_MAP2_VERTEX_3);
+				glEnable(GL_AUTO_NORMAL);
+				GLPoint pt;
+				GLfloat (* quad)[3];
+				quad=new GLfloat[pt_num*2][3];
+				for(int i=0;i<pt_num;i++){
+					pt=m_Point_Array[i];
+					pt.z=0.0;
+					quad[i][0]=pt.x;
+					quad[i][1]=pt.y;
+					quad[i][2]=pt.z;
+					pt.z=1.0;
+					quad[i+pt_num][0]=pt.z;
+					quad[i+pt_num][1]=pt.y;
+					quad[i+pt_num][2]=pt.z;
+				}
+				//调用求值器
+				glMap2f(GL_MAP2_VERTEX_3,0,1,3,pt_num,0,1,pt_num*3,2,&quad[0][0]);
+				glMapGrid2f(50,0.0,1.0,10,0,1.0);
+				glEvalMesh2(GL_FILL,0,50,0,50);
+				delete [] quad;
+			}
+			setRawVertexes=FALSE;
+			break;
+		case NURBSLINE:
+			Draw_NURBSLine();
+			setRawVertexes=FALSE;
+			break;
+		case NURBSSURF:
+			Draw_NURBSSurf();
+			setRawVertexes=FALSE;
+			break;
 		default:
 			setRawVertexes=FALSE;
 			break;
@@ -467,7 +578,7 @@ void CGLTest001View::RenderScene(){
 
 void CGLTest001View::InitOperation(){
 	//绘制每个图形时把相关参数设置为初始值
-	m_Rflag=1;  //拾取操作
+	//m_Rflag=1;  //拾取操作
 	m_Point_Array.RemoveAll();
 	glLoadIdentity();
 	m_lrMove=0.0;
@@ -744,27 +855,27 @@ void CGLTest001View::Draw_Blend(){
 		return;
 	else if(m_BlendFlag==1){	//混合
 		GLUquadricObj * obj;	//定义一个二次曲面指针
+		obj = gluNewQuadric();  //生成二次曲面对象
 
 		glPushMatrix();
 		glTranslatef(0.0,Win_Size/3,0.0);
 		glColor4f(1.0,0.0,0.0,1.0);
-		obj = gluNewQuadric();  //生成二次曲面对象
-		gluDisk(obj,0,Win_Size/3,30,1);
+		gluDisk(obj,0,Win_Size/3,30,1);		////绘制一个圆盘
 		glPopMatrix();
 
 		glPushMatrix();
 		glTranslatef(-Win_Size/5.0,0,-Win_Size/5);
 		glColor4f(0.0,1.0,0.0,1.0);
-		obj=gluNewQuadric();	//生成二次曲面对象
-		gluDisk(obj,0,Win_Size/3,30,1);
+		gluDisk(obj,0,Win_Size/3,30,1);		//绘制一个圆盘
 		glPopMatrix();
 
 		glPushMatrix();
 		glTranslatef(Win_Size/5.0,0,-Win_Size/3.0);
 		glColor4f(0.0,0.0,1.0,1.0);
-		obj=gluNewQuadric();	//生成二次曲面对象
-		gluDisk(obj,0,Win_Size/3,30,1);
+		gluDisk(obj,0,Win_Size/3,30,1);		//绘制一个圆盘
 		glPopMatrix();
+
+		gluDeleteQuadric(obj);		//删除二次曲面对象
 	}
 	else if(m_BlendFlag==2){  //透明
 		glPushMatrix();
@@ -907,7 +1018,8 @@ void CGLTest001View::Draw_Image(){
 
 		if(m_ImageFlag==IMAGEGRAYMAP)
 		{
-			glDrawPixels(m_iWidth,m_iHeight,GL_LUMINANCE,GL_UNSIGNED_BYTE,m_pImageModefied);
+			if(m_pImageModefied)
+				glDrawPixels(m_iWidth,m_iHeight,GL_LUMINANCE,GL_UNSIGNED_BYTE,m_pImageModefied);
 		}
 		else
 			glDrawPixels(m_iWidth,m_iHeight,GL_RGB,GL_UNSIGNED_BYTE,m_pImage);
@@ -929,9 +1041,11 @@ void CGLTest001View::Draw_ImageMapObject(){
 	if(m_flag!=IMAGE_MAP_OBJECT)
 		return;
 	GLfloat sizeScale=0.5f;
+	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D,m_imageIDs[0]);   //
-	glBegin(GL_QUADS);
+	glColor4f(1.0f,1.0f,1.0f,0.4f);		////设置透明度
+	glBindTexture(GL_TEXTURE_2D,m_imageIDs[0]);   ////绑定到前面
+	glBegin(GL_POLYGON);
 		glNormal3f(0.0,0.0,1.0);
 		glTexCoord2f(0.0f,0.0f);
 		glVertex3f(-Win_Size*sizeScale,-Win_Size*sizeScale,Win_Size*sizeScale);
@@ -943,8 +1057,8 @@ void CGLTest001View::Draw_ImageMapObject(){
 		glVertex3f(-Win_Size*sizeScale,Win_Size*sizeScale,Win_Size*sizeScale);
 	glEnd();
 
-	glBindTexture(GL_TEXTURE_2D,m_imageIDs[0]);   //
-	glBegin(GL_QUADS);
+	glBindTexture(GL_TEXTURE_2D,m_imageIDs[0]);   //后面
+	glBegin(GL_POLYGON);
 		glNormal3f(0.0,0.0,-1.0);
 		glTexCoord2f(0.0f,0.0f);
 		glVertex3f(-Win_Size*sizeScale,-Win_Size*sizeScale,-Win_Size*sizeScale);
@@ -956,21 +1070,21 @@ void CGLTest001View::Draw_ImageMapObject(){
 		glVertex3f(Win_Size*sizeScale,-Win_Size*sizeScale,-Win_Size*sizeScale);
 	glEnd();
 
-	glBindTexture(GL_TEXTURE_2D,m_imageIDs[1]);   //
-	glBegin(GL_QUADS);
+	glBindTexture(GL_TEXTURE_2D,m_imageIDs[1]);   //右面
+	glBegin(GL_POLYGON);
 		glNormal3f(1.0,0.0,0.0);
 		glTexCoord2f(0.0f,0.0f);
 		glVertex3f(Win_Size*sizeScale,-Win_Size*sizeScale,-Win_Size*sizeScale);
-		glTexCoord2f(0.0,1.0);
-		glVertex3f(Win_Size*sizeScale,Win_Size*sizeScale,-Win_Size*sizeScale);
-		glTexCoord2f(1.0,1.0);
-		glVertex3f(Win_Size*sizeScale,Win_Size*sizeScale,Win_Size*sizeScale);
 		glTexCoord2f(1.0,0.0);
 		glVertex3f(Win_Size*sizeScale,-Win_Size*sizeScale,Win_Size*sizeScale);
+		glTexCoord2f(1.0,1.0);
+		glVertex3f(Win_Size*sizeScale,Win_Size*sizeScale,Win_Size*sizeScale);
+		glTexCoord2f(0.0,1.0);
+		glVertex3f(Win_Size*sizeScale,Win_Size*sizeScale,-Win_Size*sizeScale);
 	glEnd();
 
-	glBindTexture(GL_TEXTURE_2D,m_imageIDs[1]);   //
-	glBegin(GL_QUADS);
+	glBindTexture(GL_TEXTURE_2D,m_imageIDs[1]);   //左面
+	glBegin(GL_POLYGON);
 		glNormal3f(-1.0,0.0,0.0);
 		glTexCoord2f(0.0f,0.0f);
 		glVertex3f(-Win_Size*sizeScale,-Win_Size*sizeScale,-Win_Size*sizeScale);
@@ -982,8 +1096,8 @@ void CGLTest001View::Draw_ImageMapObject(){
 		glVertex3f(-Win_Size*sizeScale,Win_Size*sizeScale,-Win_Size*sizeScale);
 	glEnd();
 
-	glBindTexture(GL_TEXTURE_2D,m_imageIDs[2]);   //
-	glBegin(GL_QUADS);
+	glBindTexture(GL_TEXTURE_2D,m_imageIDs[2]);   //上面
+	glBegin(GL_POLYGON);
 		glNormal3f(0.0,1.0,0.0);
 		glTexCoord2f(0.0f,0.0f);
 		glVertex3f(-Win_Size*sizeScale,Win_Size*sizeScale,-Win_Size*sizeScale);
@@ -995,8 +1109,8 @@ void CGLTest001View::Draw_ImageMapObject(){
 		glVertex3f(Win_Size*sizeScale,Win_Size*sizeScale,-Win_Size*sizeScale);
 	glEnd();
 
-	glBindTexture(GL_TEXTURE_2D,m_imageIDs[2]);   //
-	glBegin(GL_QUADS);
+	glBindTexture(GL_TEXTURE_2D,m_imageIDs[2]);   //下面
+	glBegin(GL_POLYGON);
 		glNormal3f(0.0,-1.0,0.0);
 		glTexCoord2f(0.0f,0.0f);
 		glVertex3f(-Win_Size*sizeScale,-Win_Size*sizeScale,-Win_Size*sizeScale);
@@ -1008,6 +1122,330 @@ void CGLTest001View::Draw_ImageMapObject(){
 		glVertex3f(-Win_Size*sizeScale,-Win_Size*sizeScale,Win_Size*sizeScale);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
+	if(m_DepthFlag==FALSE)
+		glDisable(GL_DEPTH_TEST);
+}
+
+void CGLTest001View::Draw_TextureSphereBG(){
+	if(m_flag!=TEXTURE_SPHERE)
+		return;
+	glPushMatrix();
+	int cx,cy;
+	cx=(int)winWidth*2;
+	cy=(int)winHeight*2;
+	::glViewport(0,0,cx,cy);	//设置绘图窗口大小
+	if(aspect_ratio<1){
+		winWidth=Win_Size;
+		winHeight=Win_Size/aspect_ratio;
+	}
+	else{
+		winWidth=Win_Size * aspect_ratio;
+		winHeight=Win_Size;
+	}
+	glBindTexture(GL_TEXTURE_2D,m_ImageSphere[0]);
+	glDisable(GL_TEXTURE_GEN_S);	//禁用纹理坐标生成
+	glDisable(GL_TEXTURE_GEN_T);	//禁用纹理坐标生成
+	glDepthMask(GL_FALSE);			//背景绘图无深度缓冲区
+	glBegin(GL_QUADS);
+		glTexCoord2f(0.0,0.0);
+		glVertex2f(-winWidth,-winHeight);
+		glTexCoord2f(1.0,0.0);
+		glVertex2f(winWidth,-winHeight);
+		glTexCoord2f(1.0,1.0);
+		glVertex2f(winWidth,winHeight);
+		glTexCoord2f(0.0,1.0);
+		glVertex2f(-winWidth,winHeight);
+	glEnd();
+	winWidth=cx/2.0;
+	winHeight=cy/2.0;
+	glPopMatrix();
+}
+
+void CGLTest001View::Draw_QuadricObj(){
+	if(m_flag!=QUADRICOBJ)
+		return;
+	GLUquadricObj * pObj;
+	pObj = gluNewQuadric();			//创建和初始化二次曲面对象
+	gluQuadricDrawStyle(pObj,GLU_FILL);			//绘制方式。 点/线框/实体/轮廓	
+	gluQuadricOrientation(pObj,GLU_OUTSIDE);	//法向方向。 朝外/朝内
+	gluQuadricNormals(pObj,GL_SMOOTH);			//法向等级。无/逐平面/逐顶点
+	glEnable(GL_NORMALIZE);						//启用法向单位化
+
+	GLfloat offset=Win_Size*0.5f;
+	glPushMatrix();
+		glTranslatef(-offset,offset,0.0);
+		glColor3f(1.0f,0.0f,0.0f);
+		gluSphere(pObj,Win_Size/4.0,20,20);		//绘制球
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(0.0f,offset,0.0);
+		glColor3f(1.0f,1.0f,0.0f);
+		gluDisk(pObj,Win_Size/6.0,Win_Size/4.0,20,20);	//圆盘
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(offset,offset,0.0);
+		glColor3f(0.0f,1.0f,1.0f);
+		gluPartialDisk(pObj,Win_Size/6.0,Win_Size/4.0,20,20,30,300);	//扇形盘
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(-offset,0.0,0.0);
+		glColor3f(1.0f,0.0f,0.0f);
+		gluCylinder(pObj,Win_Size/5.0,Win_Size/5.0,Win_Size/5.0,20,20);	//圆柱
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(0.0f,0.0f,0.0f);
+		glColor3f(1.0f,1.0f,0.0f);
+		gluCylinder(pObj,Win_Size/5.0,0.0,Win_Size/5.0,20,20);			//圆锥
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(offset,0.0,0.0);
+		glColor3f(0.0f,1.0f,1.0f);
+		gluCylinder(pObj,Win_Size/5.0,Win_Size/6.0,Win_Size/5.0,20,20); //圆锥
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(-offset,-offset,0.0);
+		glColor3f(1.0f,0.0f,0.0f);
+		glScalef(0.5f,1.0f,1.0f);
+		gluSphere(pObj,Win_Size/4.0,20,20);			//橄榄球
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(0.0,-offset,0.0);
+		glScalef(0.5f,1.0f,1.0f);
+		glColor3f(1.0f,1.0f,0.0f);
+		gluCylinder(pObj,Win_Size/5.0,Win_Size/5.0,Win_Size/5.0,20,20);	//变形圆柱
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(offset,-offset,0.0);
+		glScalef(1.0f,0.5f,1.0f);
+		glColor3f(0.0f,1.0f,1.0f);
+		gluDisk(pObj,Win_Size/6.0,Win_Size/4.0,20,20);		//变形圆盘
+	glPopMatrix();
+
+	gluDeleteQuadric(pObj);		//删除二次曲面对象
+}
+
+void CGLTest001View::Draw_NURBSLine(){
+	if(m_flag!=NURBSLINE)
+		return;
+	int pt_num=m_Point_Array.GetSize();
+	if(pt_num>1){
+		GLUnurbsObj * pNurb;
+		pNurb = gluNewNurbsRenderer();		////创建NURBS对象
+		//
+		GLPoint pt;
+		GLfloat (* ctrlPoints)[3];		////控制顶点数组
+		GLfloat *Knots;					//节点数组
+		ctrlPoints=new GLfloat[pt_num][3];
+		for(int i=0;i<pt_num;i++){
+			pt=m_Point_Array[i];
+			pt.z=0.0;
+			ctrlPoints[i][0]=pt.x;
+			ctrlPoints[i][1]=pt.y;
+			ctrlPoints[i][2]=pt.z;
+		}
+		////建立节点数组
+		if(pt_num==2){	//一次NURBS
+			Knots=new GLfloat[pt_num+2];
+			for(i=0;i<pt_num+2;i++){
+				if(i<2)
+					Knots[i]=0;
+				else
+					Knots[i]=1;
+			}
+			////绘制二阶（一次）NURBS曲线
+			gluBeginCurve(pNurb);
+			gluNurbsCurve(pNurb,4,Knots,3,&ctrlPoints[0][0],2,GL_MAP1_VERTEX_3);
+			gluEndCurve(pNurb);
+			delete [] Knots;
+		}
+		else if(pt_num==3){		//二次NURBS
+			Knots=new GLfloat[pt_num+3];
+			////利用准均匀节点数组两端节点重复度3，中间重复度1
+			for(i=0;i<pt_num+3;i++){
+				if(i<3)
+					Knots[i]=0;
+				else if(i>=3&& i<=pt_num)
+					Knots[i]=i-2;
+				else
+					Knots[i]=pt_num-2;
+			}
+			////绘制三阶（二次）NURBS曲线
+			gluBeginCurve(pNurb);
+			gluNurbsCurve(pNurb,pt_num+3,Knots,3,&ctrlPoints[0][0],3,GL_MAP1_VERTEX_3);
+			gluEndCurve(pNurb);
+			delete [] Knots;
+		}
+		else {		//三次NURBS
+			Knots = new GLfloat[pt_num+4];
+			////利用准均匀节点数组两端节点重复度4，中间重复度1
+			for(i=0;i<pt_num+4;i++){
+				if(i<4)
+					Knots[i]=0;
+				else if(i>=4 && i<=pt_num)
+					Knots[i]=i-3;
+				else 
+					Knots[i]=pt_num-3;
+			}
+			////绘制四阶（三 次）NURBS曲线
+			gluBeginCurve(pNurb);
+			gluNurbsCurve(pNurb,pt_num+4,Knots,3,&ctrlPoints[0][0],4,GL_MAP1_VERTEX_3);
+			gluEndCurve(pNurb);
+			delete [] Knots;
+		}
+		delete [] ctrlPoints;
+		gluDeleteNurbsRenderer(pNurb);	//删除NURBS对象
+	}
+}
+//NURB样条曲面
+void CGLTest001View::Draw_NURBSSurf(){
+	if(m_flag!=NURBSSURF)
+		return;
+	int pt_num=m_Point_Array.GetSize();
+	if(pt_num>1){
+		//MessageBox("nurbssurf");
+		glEnable(GL_AUTO_NORMAL);
+		GLUnurbsObj * pNurb;
+		pNurb = gluNewNurbsRenderer();		////创建NURBS对象
+		gluNurbsProperty(pNurb,GLU_SAMPLING_TOLERANCE,20);
+		gluNurbsProperty(pNurb,GLU_DISPLAY_MODE,GLU_FILL);
+		//
+		GLPoint pt;
+		GLfloat (* ctrlPoints)[3];		////控制顶点数组
+		GLfloat *Knots;					//节点数组
+		GLfloat trimPoints_out[5][3];
+		GLfloat trimPoints_in[5][3];
+		ctrlPoints=new GLfloat[pt_num*4][3];
+		GLfloat Knott[8]={0.0f,0.0f,0.0f,0.0f,1.0f,1.0f,1.0f,1.0f};
+		GLfloat texpts[2][2][2]={{{0,0},{0,1}},{{1,0},{1,1}}};
+		for(int i=0;i<pt_num;i++){
+			pt=m_Point_Array[i];
+			pt.z=0.0;
+			ctrlPoints[i][0]=pt.x;
+			ctrlPoints[i][1]=pt.y;
+			ctrlPoints[i][2]=pt.z;
+			pt.z=Win_Size*0.33;		//沿z轴平移一个距离，获得新控制顶点
+			ctrlPoints[i+pt_num][0]=pt.x;
+			ctrlPoints[i+pt_num][1]=pt.y;
+			ctrlPoints[i+pt_num][2]=pt.z;
+			pt.z=Win_Size*0.66;		//沿z轴平移一个距离，获得新控制顶点
+			ctrlPoints[i+pt_num*2][0]=pt.x;
+			ctrlPoints[i+pt_num*2][1]=pt.y;
+			ctrlPoints[i+pt_num*2][2]=pt.z;
+			pt.z=Win_Size;			//沿z轴平移一个距离，获得新控制顶点
+			ctrlPoints[i+pt_num*3][0]=pt.x;
+			ctrlPoints[i+pt_num*3][1]=pt.y;
+			ctrlPoints[i+pt_num*3][2]=pt.z;
+		}
+		if(m_NurbsTrimFlag==1){
+			trimPoints_out[0][0]=trimPoints_out[4][0]=0.1;
+			trimPoints_out[0][1]=trimPoints_out[4][1]=0.1;
+			trimPoints_out[1][0]=0.9;
+			trimPoints_out[1][1]=0.1;
+			trimPoints_out[2][0]=0.9;
+			trimPoints_out[2][1]=0.9;
+			trimPoints_out[3][0]=0.1;
+			trimPoints_out[3][1]=0.9;
+			trimPoints_in[0][0]=trimPoints_in[4][0]=0.35;
+			trimPoints_in[0][1]=trimPoints_in[4][1]=0.35;
+			trimPoints_in[1][0]=0.35;
+			trimPoints_in[1][1]=0.7;
+			trimPoints_in[2][0]=0.7;
+			trimPoints_in[2][1]=0.7;
+			trimPoints_in[3][0]=0.7;
+			trimPoints_in[3][1]=0.35;
+		}
+		if(Surf_Texture_flag==1){
+			glBindTexture(GL_TEXTURE_2D,Surf_texture);
+			glMap2f(GL_MAP2_TEXTURE_COORD_2,0,1,2,2,0,1,4,2,&texpts[0][0][0]);
+			glEnable(GL_MAP2_TEXTURE_COORD_2);
+		}
+		////建立节点数组
+		if(pt_num==2){	//一次NURBS
+			Knots=new GLfloat[pt_num+2];
+			for(i=0;i<pt_num+2;i++){
+				if(i<2)
+					Knots[i]=0;
+				else
+					Knots[i]=1;
+			}
+			////绘制NURBS曲面
+			gluBeginCurve(pNurb);
+			gluNurbsCurve(pNurb,4,Knots,3,&ctrlPoints[0][0],2,GL_MAP1_VERTEX_3);
+			gluNurbsSurface(pNurb,4,Knots,8,Knott,3,pt_num*3,&ctrlPoints[0][0],2,4,GL_MAP2_VERTEX_3);
+			if(m_NurbsTrimFlag==1){
+				gluBeginTrim(pNurb);
+				gluPwlCurve(pNurb,5,&trimPoints_out[0][0],2,GLU_MAP1_TRIM_2);
+				gluEndTrim(pNurb);
+				gluBeginTrim(pNurb);
+				gluPwlCurve(pNurb,5,&trimPoints_in[0][0],2,GLU_MAP1_TRIM_2);
+				gluEndTrim(pNurb);
+			}
+			gluEndCurve(pNurb);
+			delete [] Knots;
+		}
+		else if(pt_num==3){		//二次NURBS
+			Knots=new GLfloat[pt_num+3];
+			////利用准均匀节点数组两端节点重复度3，中间重复度1
+			for(i=0;i<pt_num+3;i++){
+				if(i<3)
+					Knots[i]=0;
+				else if(i>=3&& i<=pt_num)
+					Knots[i]=i-2;
+				else
+					Knots[i]=pt_num-2;
+			}
+			////绘制NURBS曲面
+			gluBeginCurve(pNurb);
+			gluNurbsCurve(pNurb,pt_num+3,Knots,3,&ctrlPoints[0][0],3,GL_MAP1_VERTEX_3);
+			gluNurbsSurface(pNurb,6,Knots,8,Knott,3,pt_num*3,&ctrlPoints[0][0],3,4,GL_MAP2_VERTEX_3);
+			if(m_NurbsTrimFlag==1){
+				gluBeginTrim(pNurb);
+				gluPwlCurve(pNurb,5,&trimPoints_out[0][0],2,GLU_MAP1_TRIM_2);
+				gluEndTrim(pNurb);
+				gluBeginTrim(pNurb);
+				gluPwlCurve(pNurb,5,&trimPoints_in[0][0],2,GLU_MAP1_TRIM_2);
+				gluEndTrim(pNurb);
+			}
+			gluEndCurve(pNurb);
+			delete [] Knots;
+		}
+		else {		//三次NURBS
+			Knots = new GLfloat[pt_num+4];
+			////利用准均匀节点数组两端节点重复度m+1，中间重复度小于m
+			for(i=0;i<pt_num+4;i++){
+				if(i<4)
+					Knots[i]=0;
+				else if(i>=4 && i<=pt_num)
+					Knots[i]=i-3;
+				else 
+					Knots[i]=pt_num-3;
+			}
+			////绘制NURBS曲面
+			gluBeginCurve(pNurb);
+			gluNurbsCurve(pNurb,pt_num+4,Knots,3,&ctrlPoints[0][0],4,GL_MAP1_VERTEX_3);
+			gluNurbsSurface(pNurb,pt_num+4,Knots,8,Knott,3,pt_num*3,&ctrlPoints[0][0],4,4,GL_MAP2_VERTEX_3);
+			if(m_NurbsTrimFlag==1){
+				gluBeginTrim(pNurb);
+				gluPwlCurve(pNurb,5,&trimPoints_out[0][0],2,GLU_MAP1_TRIM_2);
+				gluEndTrim(pNurb);
+				gluBeginTrim(pNurb);
+				gluPwlCurve(pNurb,5,&trimPoints_in[0][0],2,GLU_MAP1_TRIM_2);
+				gluEndTrim(pNurb);
+			}
+			gluEndCurve(pNurb);
+			delete [] Knots;
+		}
+		delete [] ctrlPoints;
+		gluDeleteNurbsRenderer(pNurb);	//删除NURBS对象
+	}
 }
 
 void CGLTest001View::SetFogMode(){
@@ -1103,6 +1541,7 @@ void CGLTest001View::OnPoint()
 {
 	// TODO: Add your command handler code here
 	m_flag=GLPOINTS;
+	m_Rflag=1;  //拾取操作
 	InitOperation();
 }
 
@@ -1110,7 +1549,7 @@ void CGLTest001View::OnLine()
 {
 	// TODO: Add your command handler code here
 	m_flag=GLLINES;
-	//MessageBox("直线");
+	m_Rflag=1;  //拾取操作
 	InitOperation();
 }
 
@@ -1118,6 +1557,7 @@ void CGLTest001View::OnLineStrip()
 {
 	// TODO: Add your command handler code here
 	m_flag=GLLINESTRIP;
+	m_Rflag=1;  //拾取操作
 	InitOperation();
 }
 
@@ -1125,7 +1565,7 @@ void CGLTest001View::OnLineLoop()
 {
 	// TODO: Add your command handler code here
 	m_flag=GLLINELOOP;
-	//MessageBox("线圈");
+	m_Rflag=1;  //拾取操作
 	InitOperation();
 }
 
@@ -1133,6 +1573,7 @@ void CGLTest001View::OnTriangle()
 {
 	// TODO: Add your command handler code here
 	m_flag=GLTRIANGLES;
+	m_Rflag=1;  //拾取操作
 	//MessageBox("三角");
 	InitOperation();
 }
@@ -1141,6 +1582,7 @@ void CGLTest001View::OnTriangleStrip()
 {
 	// TODO: Add your command handler code here
 	m_flag=GLTRIANGLESTRIP;
+	m_Rflag=1;  //拾取操作
 	//MessageBox("三角-链");
 	InitOperation();
 }
@@ -1149,6 +1591,7 @@ void CGLTest001View::OnTriangleFan()
 {
 	// TODO: Add your command handler code here
 	m_flag=GLTRIANGLEFAN;
+	m_Rflag=1;  //拾取操作
 	//MessageBox("三角-扇");
 	InitOperation();
 }
@@ -1157,6 +1600,7 @@ void CGLTest001View::OnQuad()
 {
 	// TODO: Add your command handler code here
 	m_flag=GLQUADS;
+	m_Rflag=1;  //拾取操作
 	//MessageBox("四边形");
 	InitOperation();
 }
@@ -1165,6 +1609,7 @@ void CGLTest001View::OnQuadStrip()
 {
 	// TODO: Add your command handler code here
 	m_flag=GLQUADSTRIP;
+	m_Rflag=1;  //拾取操作
 	//MessageBox("四边形-链");
 	InitOperation();
 }
@@ -1173,6 +1618,7 @@ void CGLTest001View::OnPolygon()
 {
 	// TODO: Add your command handler code here
 	m_flag=GLPOLYGON;
+	m_Rflag=1;  //拾取操作
 	//MessageBox("多边形");
 	InitOperation();
 }
@@ -1182,7 +1628,6 @@ void CGLTest001View::OnCone()
 	// TODO: Add your command handler code here
 	m_flag=CONE;
 	InitOperation();
-	m_Rflag=0;  //拾取操作
 }
 //立方体
 void CGLTest001View::OnCube() 
@@ -1190,7 +1635,6 @@ void CGLTest001View::OnCube()
 	// TODO: Add your command handler code here
 	m_flag=CUBE;
 	InitOperation();
-	m_Rflag=0;  //拾取操作
 }
 //四面体
 void CGLTest001View::OnTetrahedron() 
@@ -1198,7 +1642,6 @@ void CGLTest001View::OnTetrahedron()
 	// TODO: Add your command handler code here
 	m_flag=TETRAHEDRON;
 	InitOperation();
-	m_Rflag=0;  //拾取操作
 }
 //正十二面体
 void CGLTest001View::OnDodecahedron() 
@@ -1206,7 +1649,6 @@ void CGLTest001View::OnDodecahedron()
 	// TODO: Add your command handler code here
 	m_flag=DODECAHEDRON;
 	InitOperation();
-	m_Rflag=0;  //拾取操作
 }
 //正二十面体
 void CGLTest001View::OnIcosahedron() 
@@ -1214,7 +1656,6 @@ void CGLTest001View::OnIcosahedron()
 	// TODO: Add your command handler code here
 	m_flag=ICOSAHEDRON;
 	InitOperation();
-	m_Rflag=0;  //拾取操作
 }
 //正八面体
 void CGLTest001View::OnOctahedron() 
@@ -1222,7 +1663,6 @@ void CGLTest001View::OnOctahedron()
 	// TODO: Add your command handler code here
 	m_flag=OCTAHEDRON;
 	InitOperation();
-	m_Rflag=0;  //拾取操作
 }
 
 //球体
@@ -1231,7 +1671,6 @@ void CGLTest001View::OnSphere()
 	// TODO: Add your command handler code here
 	m_flag=SPHERE;
 	InitOperation();
-	m_Rflag=0;  //拾取操作
 }
 //圆环体
 void CGLTest001View::OnTorus() 
@@ -1239,7 +1678,6 @@ void CGLTest001View::OnTorus()
 	// TODO: Add your command handler code here
 	m_flag=TORUS;
 	InitOperation();
-	m_Rflag=0;  //拾取操作
 }
 //茶壶
 void CGLTest001View::OnTeapot() 
@@ -1247,10 +1685,9 @@ void CGLTest001View::OnTeapot()
 	// TODO: Add your command handler code here
 	m_flag=TEAPOT;
 	InitOperation();
-	m_Rflag=0;  //拾取操作
 }
 
-//左键
+//右键
 void CGLTest001View::OnRButtonDown(UINT nFlags, CPoint point) 
 {
 	// TODO: Add your message handler code here and/or call default
@@ -1259,7 +1696,7 @@ void CGLTest001View::OnRButtonDown(UINT nFlags, CPoint point)
 	CView::OnRButtonDown(nFlags, point);
 }
 
-//右键
+//左键
 void CGLTest001View::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 	// TODO: Add your message handler code here and/or call default
@@ -1276,6 +1713,24 @@ void CGLTest001View::OnLButtonDown(UINT nFlags, CPoint point)
 			pt.z=0.0;
 		}
 		m_Point_Array.Add(pt);
+
+/*		if(m_flag==BEZIERLINE){  //Bezier 曲线控制点
+			int pt_num=m_Point_Array.GetSize();
+			if(pt_num>1){
+				GLfloat (* quad)[3];
+				quad = new GLfloat[pt_num][3];
+				for(int i=0;i<pt_num;i++){
+					pt=m_Point_Array[i];
+					pt.z=0.0;
+					quad[i][0]=pt.x;
+					quad[i][1]=pt.y;
+					quad[i][2]=pt.z;
+				}
+				////调用求值器
+				glMap1f(GL_MAP1_VERTEX_3,0.0,1.0,3,pt_num,&quad[0][0]);
+				delete []quad;
+			}
+		}*/
 		Invalidate();
 	}
 	else if(m_Rflag==0){
@@ -1501,8 +1956,8 @@ void CGLTest001View::OnStretch()
 	m_Pt_Array_Polygon.Append(this->m_Point_Array);
 	m_fLength=Win_Size/2.0;
 	m_flag=STRETCH;
-	InitOperation();
 	m_Rflag=0;
+	InitOperation();
 }
 //拉伸UI
 void CGLTest001View::OnUpdateStretch(CCmdUI* pCmdUI) 
@@ -1583,10 +2038,10 @@ BOOL CGLTest001View::OpenBmpImageFile(){
 		TEXT("bmp 文件(*.bmp)|*.bmp|"),NULL);
 	int action = hFileDlg.DoModal();
 	if(action ==IDOK){
-		if(m_pImage){
+		/*if(m_pImage){
 			delete m_pImage;
 			m_pImage=NULL;
-		}
+		}*/
 		if(m_pImageModefied){
 			delete m_pImageModefied;
 			m_pImageModefied=NULL;
@@ -1664,16 +2119,16 @@ void CGLTest001View::OnImageMap2d()
 void CGLTest001View::OnTextrueMapObject() 
 {
 	// TODO: Add your command handler code here
-	glGenTextures(3,m_imageIDs);	//
+	glGenTextures(3,m_imageIDs);	////产生纹理对象ID
 	for(int i=0;i<3;i++){
 		if(this->OpenBmpImageFile()){
-			glBindTexture(GL_TEXTURE_2D,m_imageIDs[i]);
-			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
+			glBindTexture(GL_TEXTURE_2D,m_imageIDs[i]);  //置为当前纹理
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);  //设置纹理参数
 			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
 			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-			glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
-			glTexImage2D(GL_TEXTURE_2D,0,3,m_iWidth,m_iHeight,0,GL_RGB,GL_UNSIGNED_BYTE,m_pImage);
+			glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);		//设置纹理环境
+			glTexImage2D(GL_TEXTURE_2D,0,3,m_iWidth,m_iHeight,0,GL_RGB,GL_UNSIGNED_BYTE,m_pImage); //传送给GPU
 		}
 		else{
 			CString str;
@@ -1683,4 +2138,145 @@ void CGLTest001View::OnTextrueMapObject()
 	}
 	m_flag=IMAGE_MAP_OBJECT;
 	InitOperation();
+}
+//纹理透明
+void CGLTest001View::OnImageMapBlend() 
+{
+	// TODO: Add your command handler code here
+	if(m_flag==IMAGE_MAP_OBJECT){
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+		glShadeModel(GL_SMOOTH);
+		glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
+		Invalidate();
+	}
+}
+//一维纹理
+void CGLTest001View::OnTexture1d() 
+{
+	// TODO: Add your command handler code here
+	////创建一维纹理位图图像
+	GLubyte image_tex_1D[4*32];
+	for(int i=0;i<32;i++){
+		image_tex_1D[4*i]=GLubyte((i<=4)?255:0);
+		image_tex_1D[4*i+1]=GLubyte((i>4)?255:0);
+		image_tex_1D[4*i+2]=GLubyte(0);
+		image_tex_1D[4*i+3]=GLubyte(255);
+	}
+	////创建和绑定一维纹理对象
+	glGenTextures(1,&m_texture1D);
+	glBindTexture(GL_TEXTURE_1D,m_texture1D);
+	////设置纹理参数
+	glTexParameteri(GL_TEXTURE_1D,GL_TEXTURE_WRAP_S,GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_1D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_1D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);	//设置纹理环境
+	////加载纹理图像
+	glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,32,0,GL_RGBA,GL_UNSIGNED_BYTE,image_tex_1D);
+	////自动生成纹理坐标
+	GLfloat fzero[] = {1.0,0.0,0.0,0.0};
+	glTexGeni(GL_S,GL_TEXTURE_GEN_MODE,GL_OBJECT_LINEAR);
+	glTexGenfv(GL_S,GL_OBJECT_PLANE,fzero);
+	glEnable(GL_TEXTURE_GEN_S);		//启用纹理坐标
+	glEnable(GL_TEXTURE_1D);		//启用一维纹理映射
+	glEnable(GL_AUTO_NORMAL);		//设置法向量
+	glEnable(GL_NORMALIZE);			//法向量规范化
+	glFrontFace(GL_CW);				//设置顶点走向
+	m_flag=TEXTURE_MAP_1D;			//设置一维纹理映射宏
+	InitOperation();
+}
+//球体纹理对象
+void CGLTest001View::OnTextureSphere() 
+{
+	// TODO: Add your command handler code here
+	if(this->OpenBmpImageFile()){
+		glGenTextures(2,m_ImageSphere);		////创建纹理对象
+		for(int i=0;i<2;i++){
+			glBindTexture(GL_TEXTURE_2D,m_ImageSphere[i]);
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+			glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
+			glTexImage2D(GL_TEXTURE_2D,0,3,m_iWidth,m_iHeight,0,GL_RGB,GL_UNSIGNED_BYTE,m_pImage);
+			//m_iMode=GL_REPLACE;
+		}
+		m_flag=TEXTURE_SPHERE;
+		InitOperation();
+		glEnable(GL_TEXTURE_2D);	//启用纹理
+		////启用球体纹理
+		glTexGeni(GL_S,GL_TEXTURE_GEN_MODE,GL_SPHERE_MAP);
+		glTexGeni(GL_T,GL_TEXTURE_GEN_MODE,GL_SPHERE_MAP);
+		glEnable(GL_DEPTH_TEST);
+	}
+}
+//二次曲面对象
+void CGLTest001View::OnQuadricobj() 
+{
+	// TODO: Add your command handler code here
+	m_flag=QUADRICOBJ;
+	InitOperation();
+}
+//贝塞尔曲线
+void CGLTest001View::OnBezierline() 
+{
+	// TODO: Add your command handler code here
+	m_flag=BEZIERLINE;
+	m_Rflag=1;
+	InitOperation();
+}
+//Bezier 曲面
+void CGLTest001View::OnBeziersurf() 
+{
+	// TODO: Add your command handler code here
+	m_flag=BEZIERSURF;
+	m_Rflag=1;
+	InitOperation();
+}
+//NURB样条曲线
+void CGLTest001View::OnNurbsline() 
+{
+	// TODO: Add your command handler code here
+	m_flag=NURBSLINE;
+	m_Rflag=1;
+	InitOperation();
+}
+//NURB样条曲面
+void CGLTest001View::OnNurbssurf() 
+{
+	// TODO: Add your command handler code here
+	m_flag=NURBSSURF;
+	m_Rflag=1;
+	m_NurbsTrimFlag=0;
+	Surf_Texture_flag=0;
+	InitOperation();
+}
+//NURB样条曲面  裁剪
+void CGLTest001View::OnNurbstrim() 
+{
+	// TODO: Add your command handler code here
+	m_NurbsTrimFlag=m_NurbsTrimFlag==0?1:0;
+	Invalidate();
+}
+//曲面纹理映射
+void CGLTest001View::OnNurbstexturemap() 
+{
+	// TODO: Add your command handler code here
+	if(m_flag==NURBSSURF){
+		if(this->OpenBmpImageFile()){
+			glGenTextures(1,&Surf_texture);
+			glBindTexture(GL_TEXTURE_2D,Surf_texture);
+			glTexImage2D(GL_TEXTURE_2D,0,3,m_iWidth,m_iHeight,0,GL_RGB,GL_UNSIGNED_BYTE,m_pImage);
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+			glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_DECAL);
+			glEnable(GL_TEXTURE_2D);
+			Surf_Texture_flag=1;
+			Invalidate();
+		}
+	}
 }

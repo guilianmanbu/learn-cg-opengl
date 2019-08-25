@@ -66,8 +66,8 @@ LINK32=link.exe
 # PROP Output_Dir "Debug"
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /GZ  /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Yu"stdafx.h" /FD /GZ   /c
+# ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR /Yu"stdafx.h" /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x804 /d "_DEBUG" /d "_AFXDLL"
@@ -90,6 +90,14 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\CoordSetDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\EnvironmentSetDlg.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GLTest001.cpp
 # End Source File
 # Begin Source File
@@ -106,17 +114,49 @@ SOURCE=.\GLTest001View.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ImageModeDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\LineWidthDlg.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\MainFrm.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\PatternDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\PointSizeDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\PolygonFillDlg.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
+# Begin Source File
+
+SOURCE=.\Util.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=.\CoordSetDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\EnvironmentSetDlg.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\GLTest001.h
@@ -131,7 +171,27 @@ SOURCE=.\GLTest001View.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ImageModeDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\LineWidthDlg.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\MainFrm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\PatternDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\PointSizeDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\PolygonFillDlg.h
 # End Source File
 # Begin Source File
 
@@ -140,6 +200,10 @@ SOURCE=.\Resource.h
 # Begin Source File
 
 SOURCE=.\StdAfx.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Util.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
@@ -156,6 +220,10 @@ SOURCE=.\res\GLTest001.rc2
 # Begin Source File
 
 SOURCE=.\res\GLTest001Doc.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\icon1.ico
 # End Source File
 # Begin Source File
 

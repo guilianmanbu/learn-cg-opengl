@@ -52,6 +52,14 @@
 #define IMAGEINVERSE	30
 #define TEXTURE_MAP_2D	31
 #define IMAGE_MAP_OBJECT	32
+#define TEXTURE_MAP_1D	33
+#define TEXTURE_SPHERE	34
+#define QUADRICOBJ		35
+#define BEZIERLINE		36
+#define BEZIERSURF		37
+#define NURBSLINE		38
+#define NURBSSURF		39
+
 
 class CGLTest001View : public CView
 {
@@ -120,6 +128,12 @@ public:
 	int m_ImageFlag;			//图像操作标识
 	//多纹理对象
 	GLuint m_imageIDs[3];		//纹理对象的数组
+	GLuint m_texture1D;			//一维纹理
+	GLuint m_ImageSphere[2];	//球体纹理对象
+	//NURB样条曲面
+	int m_NurbsTrimFlag;		//NURB样条曲面裁剪标志
+	int Surf_Texture_flag;		////曲面纹理加载的变量
+	GLuint Surf_texture;		////纹理对象变量
 
 // Operations
 public:
@@ -142,6 +156,10 @@ public:
 	void Draw_Select();
 	void Draw_Image();
 	void Draw_ImageMapObject();
+	void Draw_TextureSphereBG();
+	void Draw_QuadricObj();
+	void Draw_NURBSLine();
+	void Draw_NURBSSurf();
 	void SetFogMode();
 	void SetVertexesToGL();
 
@@ -214,6 +232,16 @@ protected:
 	afx_msg void OnImageflag();
 	afx_msg void OnImageMap2d();
 	afx_msg void OnTextrueMapObject();
+	afx_msg void OnImageMapBlend();
+	afx_msg void OnTexture1d();
+	afx_msg void OnTextureSphere();
+	afx_msg void OnQuadricobj();
+	afx_msg void OnBezierline();
+	afx_msg void OnBeziersurf();
+	afx_msg void OnNurbsline();
+	afx_msg void OnNurbssurf();
+	afx_msg void OnNurbstrim();
+	afx_msg void OnNurbstexturemap();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
