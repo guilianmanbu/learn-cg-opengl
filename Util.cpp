@@ -41,18 +41,14 @@ Util::~Util()
 }
 
 void Polygon3DBegin(GLenum type){
-	//glEnd();
 	glBegin(type);
-	//Message("000000");
 }
 void Polygon3DVertex(const GLvoid* data){
 	const GLdouble * ptr=(const GLdouble*)data;
 	glVertex3dv(ptr);
-	//Message("111111");
 }
 void Polygon3DEnd(){
 	glEnd();
-	//Message("2222");
 }
 BOOL Util::PolygonTesslator(CArray<GLPoint,GLPoint> &m_Point_Array){
 	int pt_num = m_Point_Array.GetSize();

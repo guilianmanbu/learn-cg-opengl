@@ -144,7 +144,9 @@ public:
 	void InitOperation();			//绘图操作初始化设置
 	void RealEnvironmentSet();		//真实感设置函数
 	void DoSelection(GLfloat xPos,GLfloat yPos);	//选取
-	BOOL OpenBmpImageFile();
+	BOOL OpenBmpImageFile();		//打开图片文件
+	void SetFogMode();				//设置雾效
+	void SetVertexesToGL();			//传送拾取点给OpenGL
 
 // Draw graphic
 public:
@@ -160,8 +162,7 @@ public:
 	void Draw_QuadricObj();
 	void Draw_NURBSLine();
 	void Draw_NURBSSurf();
-	void SetFogMode();
-	void SetVertexesToGL();
+	
 
 // Overrides
 	// ClassWizard generated virtual function overrides

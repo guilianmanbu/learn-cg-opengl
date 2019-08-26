@@ -296,74 +296,84 @@ void CGLTest001View::RenderScene(){
 	//Draw_LineStrip();
 	//Draw_Point();
 	
-	BOOL setRawVertexes=TRUE;   //是否给gl发送原始拾取点
+	//BOOL setRawVertexes=TRUE;   //是否给gl发送原始拾取点
 	if(m_flag==GLPOINTS){
 		glPointSize(m_PtCurSize); //点的大小
 	}
-	else if(m_flag>=GLLINES && m_flag<=GLPOLYGON){
+	//else if((m_flag>=GLLINES && m_flag<=GLPOLYGON) || m_flag==STRETCH){
 		//如果是封闭图形，是否填充
 		if(m_bPolygonFill==TRUE)
 			glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		else
 			glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-	}
-	else if(m_flag>=CONE && m_flag<=TEAPOT){
-		setRawVertexes=FALSE;
-		m_3DRadius=Win_Size/4.0;
-	}
-	else if(m_flag==STRETCH){
-		setRawVertexes=FALSE;
-		//如果是封闭图形，是否填充
-		if(m_bPolygonFill==TRUE)
-			glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-		else
-			glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-	}
+	//}
+
 	switch(m_flag)
 	{
 		case GLPOINTS:
 			glBegin(GL_POINTS);
+			SetVertexesToGL();  // 传送顶点给GL
+			glEnd();
 			break;
 		case GLLINES:
 			glBegin(GL_LINES);
+			SetVertexesToGL();  // 传送顶点给GL
+			glEnd();
 			break;
 		case GLLINESTRIP:
 			glBegin(GL_LINE_STRIP);
+			SetVertexesToGL();  // 传送顶点给GL
+			glEnd();
 			break;
 		case GLLINELOOP:
 			glBegin(GL_LINE_LOOP);
+			SetVertexesToGL();  // 传送顶点给GL
+			glEnd();
 			break;
 		case GLTRIANGLES:
 			glBegin(GL_TRIANGLES);
+			SetVertexesToGL();  // 传送顶点给GL
+			glEnd();
 			break;
 		case GLTRIANGLESTRIP:
 			glBegin(GL_TRIANGLE_STRIP);
+			SetVertexesToGL();  // 传送顶点给GL
+			glEnd();
 			break;
 		case GLTRIANGLEFAN:
 			glBegin(GL_TRIANGLE_FAN);
+			SetVertexesToGL();  // 传送顶点给GL
+			glEnd();
 			break;
 		case GLQUADS:
 			glBegin(GL_QUADS);
+			SetVertexesToGL();  // 传送顶点给GL
+			glEnd();
 			break;
 		case GLQUADSTRIP:
 			glBegin(GL_QUAD_STRIP);
+			SetVertexesToGL();  // 传送顶点给GL
+			glEnd();
 			break;
 		case GLPOLYGON:
 			if(m_bPolygonFill){
 				Util::PolygonTesslator(m_Point_Array);
-				setRawVertexes=FALSE;
 			}
 			else{
 				glBegin(GL_POLYGON);
+				SetVertexesToGL();  // 传送顶点给GL
+				glEnd();
 			}
 			break;
 		case CONE:			//圆锥体
+			m_3DRadius=Win_Size/4.0;
 			if(m_bPolygonFill)
 				glutSolidCone(m_3DRadius,m_3DRadius*2,30,30);
 			else
 				glutWireCone(m_3DRadius,m_3DRadius*2,30,30);
 			break;
 		case TETRAHEDRON:	//四面体
+			m_3DRadius=Win_Size/4.0;
 			glScaled(m_3DRadius,m_3DRadius,m_3DRadius);  //缩放变换
 			if(m_bPolygonFill)
 				glutSolidTetrahedron();
@@ -371,12 +381,14 @@ void CGLTest001View::RenderScene(){
 				glutWireTetrahedron();
 			break;
 		case CUBE:			//立方体
+			m_3DRadius=Win_Size/4.0;
 			if(m_bPolygonFill)
 				glutSolidCube(m_3DRadius);
 			else
 				glutWireCube(m_3DRadius);
 			break;
 		case DODECAHEDRON:	//正十二面体
+			m_3DRadius=Win_Size/4.0;
 			glScaled(m_3DRadius,m_3DRadius,m_3DRadius);  //缩放变换
 			if(m_bPolygonFill)
 				glutSolidDodecahedron();
@@ -384,6 +396,7 @@ void CGLTest001View::RenderScene(){
 				glutWireDodecahedron();
 			break;
 		case ICOSAHEDRON:	//正二十面体
+			m_3DRadius=Win_Size/4.0;
 			glScaled(m_3DRadius,m_3DRadius,m_3DRadius);  //缩放变换
 			if(m_bPolygonFill)
 				glutSolidIcosahedron();
@@ -391,6 +404,7 @@ void CGLTest001View::RenderScene(){
 				glutWireIcosahedron();
 			break;
 		case OCTAHEDRON:	//正八面体
+			m_3DRadius=Win_Size/4.0;
 			glScaled(m_3DRadius,m_3DRadius,m_3DRadius);  //缩放变换
 			if(m_bPolygonFill)
 				glutSolidOctahedron();
@@ -398,18 +412,21 @@ void CGLTest001View::RenderScene(){
 				glutWireOctahedron();
 			break;
 		case SPHERE:		//球体
+			m_3DRadius=Win_Size/4.0;
 			if(m_bPolygonFill)
 				glutSolidSphere(m_3DRadius,30,30);
 			else
 				glutWireSphere(m_3DRadius,30,30);
 			break;
 		case TORUS:			//圆环体
+			m_3DRadius=Win_Size/4.0;
 			if(m_bPolygonFill)
 				glutSolidTorus(m_3DRadius/2.0,m_3DRadius,30,30);
 			else
 				glutWireTorus(m_3DRadius/2.0,m_3DRadius,30,30);
 			break;
 		case TEAPOT:		//茶壶
+			m_3DRadius=Win_Size/4.0;
 			if(m_bPolygonFill)
 				glutSolidTeapot(m_3DRadius);
 			else
@@ -419,7 +436,6 @@ void CGLTest001View::RenderScene(){
 			Draw_Stretch();
 			break;
 		case SELECT:
-			setRawVertexes=FALSE;
 			Draw_Select();
 			break;
 		case BITMAP:	//位图
@@ -434,13 +450,11 @@ void CGLTest001View::RenderScene(){
 			}
 			glRasterPos2f(x,y);  //左上角
 			glBitmap(32,32,0.0,0.0,0.0,0.0,Zebra);
-			setRawVertexes=FALSE;
 			break;
 		case IMAGE_FILE:
 			Draw_Image();
 			//if(m_pImage)
 				//glDrawPixels(m_iWidth,m_iHeight,GL_RGB,GL_UNSIGNED_BYTE,m_pImage);
-			setRawVertexes=FALSE;
 			break;
 		case TEXTURE_MAP_2D:
 			glEnable(GL_TEXTURE_2D);
@@ -455,11 +469,9 @@ void CGLTest001View::RenderScene(){
 				glVertex3f(-Win_Size/3.0,Win_Size/3.0,0.0);
 			glEnd();
 			glDisable(GL_TEXTURE_2D);
-			setRawVertexes=FALSE;
 			break;
 		case IMAGE_MAP_OBJECT:
 			Draw_ImageMapObject();
-			setRawVertexes=FALSE;
 			break;
 		case TEXTURE_MAP_1D:
 			glBindTexture(GL_TEXTURE_1D,m_texture1D);
@@ -470,7 +482,6 @@ void CGLTest001View::RenderScene(){
 				glVertex3f(Win_Size/6.0,Win_Size/6.0,0.0);
 				glVertex3f(-Win_Size/6.0,Win_Size/6.0,0.0);
 			glEnd();
-			setRawVertexes=FALSE;
 			break;
 		case TEXTURE_SPHERE:
 			glEnable(GL_TEXTURE_GEN_S);		//启用纹理坐标生成
@@ -478,94 +489,39 @@ void CGLTest001View::RenderScene(){
 			glDepthMask(GL_TRUE);
 			glBindTexture(GL_TEXTURE_2D,m_ImageSphere[1]);
 			glutSolidTorus(Win_Size/8.0,Win_Size/4.0,30,30);
-			setRawVertexes=FALSE;
+			glDisable(GL_TEXTURE_GEN_S);
+			glDisable(GL_TEXTURE_GEN_T);
 			break;
 		case QUADRICOBJ:
 			Draw_QuadricObj();
-			setRawVertexes=FALSE;
 			break;
 		case BEZIERLINE:
 			if(m_Point_Array.GetSize()>1){
-				int pt_num=m_Point_Array.GetSize();
-				if(pt_num>1){
-					glEnable(GL_MAP1_VERTEX_3);		//启用求值器
-					GLPoint pt;
-					GLfloat (* quad)[3];
-					quad = new GLfloat[pt_num*2][3];
-					for(int i=0;i<pt_num;i++){
-						pt=m_Point_Array[i];
-						pt.z=0.0;
-						quad[i][0]=pt.x;
-						quad[i][1]=pt.y;
-						quad[i][2]=pt.z;
-					}
-					
-					////调用求值器
-					glMap1f(GL_MAP1_VERTEX_3,0.0,1.0,3,2,&quad[0][0]);
-					glMapGrid1f(50,0,1);		//创建一维网格
-					glEvalMesh1(GL_LINE,0,50);		//绘制一维网格，即 Bezier 曲线
-					/*glBegin(GL_LINE_STRIP);
-					for(i=0;i<50;i++)
-						glEvalCoord1f((float)i/50.0);
-					glEnd();*/
-					delete []quad;
-				}
-				//glEnable(GL_MAP1_VERTEX_3);		//启用求值器
-				//glMapGrid1d(100,0.0,1.0);		//创建一维网格
-				//glEvalMesh1(GL_LINE,0,100);		//绘制一维网格，即 Bezier 曲线
-				/*MessageBox("bezier curve");
-				glBegin(GL_LINE_STRIP);
-					//for(int i=0;i<100;i++)
-						//glEvalCoord1f((float)i/100.0);
-				for(int i=0;i<m_Point_Array.GetSize();i++){
-					glVertex3f(m_Point_Array[i].x,m_Point_Array[i].y,0.0f);
-				}*/
+				glEnable(GL_MAP1_VERTEX_3);		//启用求值器
+				glMapGrid1f(100,0,1);			//创建一维网格
+				glEvalMesh1(GL_LINE,0,100);		//绘制一维网格，即 Bezier 曲线
+				glDisable(GL_MAP1_VERTEX_3);
 			}
-			setRawVertexes=FALSE;
 			break;
 		case BEZIERSURF:
-			if(m_Point_Array.GetSize()>1){
-				int pt_num=m_Point_Array.GetSize();
-				glEnable(GL_MAP2_VERTEX_3);
-				glEnable(GL_AUTO_NORMAL);
-				GLPoint pt;
-				GLfloat (* quad)[3];
-				quad=new GLfloat[pt_num*2][3];
-				for(int i=0;i<pt_num;i++){
-					pt=m_Point_Array[i];
-					pt.z=0.0;
-					quad[i][0]=pt.x;
-					quad[i][1]=pt.y;
-					quad[i][2]=pt.z;
-					pt.z=1.0;
-					quad[i+pt_num][0]=pt.z;
-					quad[i+pt_num][1]=pt.y;
-					quad[i+pt_num][2]=pt.z;
-				}
-				//调用求值器
-				glMap2f(GL_MAP2_VERTEX_3,0,1,3,pt_num,0,1,pt_num*3,2,&quad[0][0]);
-				glMapGrid2f(50,0.0,1.0,10,0,1.0);
-				glEvalMesh2(GL_FILL,0,50,0,50);
-				delete [] quad;
+			if(m_Point_Array.GetSize()>1){	
+				glEnable(GL_MAP2_VERTEX_3);			//启用求值器
+				glEnable(GL_AUTO_NORMAL);			//启用自动法向量生成功能
+				glMapGrid2f(50,0.0,1.0,10,0,1.0);	//设置二维网格
+				glEvalMesh2(GL_LINE,0,50,0,50);		//绘制二维网格
+				glDisable(GL_MAP2_VERTEX_3);
+				glDisable(GL_AUTO_NORMAL);
 			}
-			setRawVertexes=FALSE;
 			break;
 		case NURBSLINE:
 			Draw_NURBSLine();
-			setRawVertexes=FALSE;
 			break;
 		case NURBSSURF:
 			Draw_NURBSSurf();
-			setRawVertexes=FALSE;
 			break;
 		default:
-			setRawVertexes=FALSE;
 			break;
 	}
-	if(setRawVertexes){
-		SetVertexesToGL();  // 传送顶点给GL
-	}
-	glEnd();
 
 	if(m_LinePattern!=-1){
 		glDisable(GL_LINE_STIPPLE);
@@ -1714,8 +1670,8 @@ void CGLTest001View::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 		m_Point_Array.Add(pt);
 
-/*		if(m_flag==BEZIERLINE){  //Bezier 曲线控制点
-			int pt_num=m_Point_Array.GetSize();
+		int pt_num=m_Point_Array.GetSize();
+		if(m_flag==BEZIERLINE){  //Bezier 曲线控制点
 			if(pt_num>1){
 				GLfloat (* quad)[3];
 				quad = new GLfloat[pt_num][3];
@@ -1730,7 +1686,27 @@ void CGLTest001View::OnLButtonDown(UINT nFlags, CPoint point)
 				glMap1f(GL_MAP1_VERTEX_3,0.0,1.0,3,pt_num,&quad[0][0]);
 				delete []quad;
 			}
-		}*/
+		}
+		else if(m_flag==BEZIERSURF){
+			if(pt_num>1){
+				GLfloat (* quad)[3];
+				quad=new GLfloat[pt_num*2][3];	//Bezier 曲面控制点
+				for(int i=0;i<pt_num;i++){
+					pt=m_Point_Array[i];
+					pt.z=0.0;
+					quad[i][0]=pt.x;
+					quad[i][1]=pt.y;
+					quad[i][2]=pt.z;
+					pt.z=1.0;
+					quad[i+pt_num][0]=pt.x;
+					quad[i+pt_num][1]=pt.y;
+					quad[i+pt_num][2]=pt.z;
+				}
+				//调用求值器
+				glMap2f(GL_MAP2_VERTEX_3,0,1,3,pt_num,0,1,pt_num*3,2,&quad[0][0]);
+				delete [] quad;
+			}
+		}
 		Invalidate();
 	}
 	else if(m_Rflag==0){
@@ -2132,7 +2108,8 @@ void CGLTest001View::OnTextrueMapObject()
 		}
 		else{
 			CString str;
-			str.Format("",i+1);
+			str.Format("请选择第%d张图片",i+1);
+			MessageBox(str);
 			i--;
 		}
 	}
@@ -2201,7 +2178,6 @@ void CGLTest001View::OnTextureSphere()
 			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 			glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
 			glTexImage2D(GL_TEXTURE_2D,0,3,m_iWidth,m_iHeight,0,GL_RGB,GL_UNSIGNED_BYTE,m_pImage);
-			//m_iMode=GL_REPLACE;
 		}
 		m_flag=TEXTURE_SPHERE;
 		InitOperation();
